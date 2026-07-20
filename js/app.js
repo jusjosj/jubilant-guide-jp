@@ -196,25 +196,37 @@ window.APP_ROUTER = (function() {
   function updateSandboxVerb(verb) {
     if (!verb) return;
 
-    document.getElementById("sand-display-kanji").innerHTML = `<span class="kanji-hover" data-read="${verb.hiragana}">${verb.kanji}</span>`;
-    document.getElementById("sand-display-hiragana").innerText = verb.hiragana;
-    document.getElementById("sand-display-meaning").innerText = verb.english;
+    const setHtml = (id, html) => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = html;
+    };
+    const setText = (id, text) => {
+      const el = document.getElementById(id);
+      if (el) el.innerText = text;
+    };
+
+    setHtml("sand-display-kanji", `<span class="kanji-hover" data-read="${verb.hiragana}">${verb.kanji}</span>`);
+    setText("sand-display-hiragana", verb.hiragana);
+    setText("sand-display-meaning", verb.english);
     
-    document.getElementById("sand-display-group").innerText = verb.group;
-    document.getElementById("sand-display-subtype").innerText = verb.subtype;
+    setText("sand-display-group", verb.group);
+    setText("sand-display-subtype", verb.subtype);
 
-    document.getElementById("sand-res-te").innerHTML = `<span class="kanji-hover" data-read="${verb.teHiragana}">${verb.teForm}</span>`;
-    document.getElementById("sand-res-te-info").innerText = verb.teHiragana;
+    setHtml("sand-res-te", `<span class="kanji-hover" data-read="${verb.teHiragana}">${verb.teForm}</span>`);
+    setText("sand-res-te-info", verb.teHiragana);
 
-    document.getElementById("sand-res-ta").innerHTML = `<span class="kanji-hover" data-read="${verb.taHiragana}">${verb.taForm}</span>`;
-    document.getElementById("sand-res-ta-info").innerText = verb.taHiragana;
+    setHtml("sand-res-ta", `<span class="kanji-hover" data-read="${verb.taHiragana}">${verb.taForm}</span>`);
+    setText("sand-res-ta-info", verb.taHiragana);
 
-    document.getElementById("sandbox-explanation-text").innerHTML = `
-      <strong>Sandbox Diagnosis:</strong> ${verb.explanation} 
-      This is a <strong>Group ${verb.group}</strong> verb. The stem matches 
-      <em>${verb.kanji.slice(0, -1)}</em> and the conjugation suffix applied is 
-      <em>${verb.teForm.slice(verb.kanji.slice(0, -1).length)}</em> (for -te Form).
-    `;
+    const expEl = document.getElementById("sandbox-explanation-text");
+    if (expEl) {
+      expEl.innerHTML = `
+        <strong>Sandbox Diagnosis:</strong> ${verb.explanation} 
+        This is a <strong>Group ${verb.group}</strong> verb. The stem matches 
+        <em>${verb.kanji.slice(0, -1)}</em> and the conjugation suffix applied is 
+        <em>${verb.teForm.slice(verb.kanji.slice(0, -1).length)}</em> (for -te Form).
+      `;
+    }
   }
 
   // --- Dictionary/Index Logic ---
