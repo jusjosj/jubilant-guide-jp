@@ -127,7 +127,6 @@
             <div class="verb-main-display">
               <h2 id="sand-display-kanji">食</h2>
               <div id="sand-display-hiragana">たべる</div>
-              <div id="sand-display-romaji">taberu</div>
               <div id="sand-display-meaning">to eat</div>
             </div>
             <div class="verb-meta-row">
@@ -146,16 +145,16 @@
               <strong class="sandbox-form-val sand-te" id="sand-res-te">食べて</strong>
             </div>
             <div class="sandbox-form-row">
-              <span>-te (Kana/Romaji):</span>
-              <span id="sand-res-te-info">たべて / tabete</span>
+              <span>-te Form (Kana):</span>
+              <span id="sand-res-te-info">たべて</span>
             </div>
             <div class="sandbox-form-row">
               <span>-ta Form (た):</span>
               <strong class="sandbox-form-val sand-ta" id="sand-res-ta">食べた</strong>
             </div>
             <div class="sandbox-form-row">
-              <span>-ta (Kana/Romaji):</span>
-              <span id="sand-res-ta-info">たべた / tabeta</span>
+              <span>-ta Form (Kana):</span>
+              <span id="sand-res-ta-info">たべた</span>
             </div>
           </div>
         </div>
@@ -187,6 +186,15 @@
         </div>
       </div>
 
+      <div class="dict-controls" style="margin-top: 15px; display: flex; gap: 10px;">
+        <span style="font-size: 0.9rem; color: var(--color-text-muted); align-self: center; font-weight: 500;">JLPT Level:</span>
+        <div class="segmented-control">
+          <button class="seg-btn active" data-filter="all" id="btn-filter-lvl-all">All Levels</button>
+          <button class="seg-btn" data-filter="N5" id="btn-filter-lvl-n5">JLPT N5</button>
+          <button class="seg-btn" data-filter="N4" id="btn-filter-lvl-n4">JLPT N4</button>
+        </div>
+      </div>
+
       <div class="glass-card dict-table-card">
         <table class="dict-table">
           <thead>
@@ -195,6 +203,7 @@
               <th>Hiragana</th>
               <th>Romaji</th>
               <th>English Meaning</th>
+              <th>Level</th>
               <th>Group</th>
               <th>-te Form</th>
               <th>-ta Form</th>

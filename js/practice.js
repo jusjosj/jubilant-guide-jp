@@ -9,6 +9,7 @@ window.PRACTICE_MODULE = (function() {
     score: 0,
     totalQuestions: 0,
     answersLog: [], // tracks user answer, correctness, verb, target form
+    practiceLevel: "all", // Filter by level: "all", "N5", "N4"
     // Quiz configuration
     quizConfig: {
       length: 10,
@@ -21,6 +22,13 @@ window.PRACTICE_MODULE = (function() {
     selectedSuffix: null
   };
 
+  function setPracticeLevel(btnEl, level) {
+    const parent = btnEl.parentNode;
+    parent.querySelectorAll(".seg-btn").forEach(btn => btn.classList.remove("active"));
+    btnEl.classList.add("active");
+    activeState.practiceLevel = level;
+  }
+
   function initPracticePortal(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -29,6 +37,15 @@ window.PRACTICE_MODULE = (function() {
       <div class="practice-portal-header text-center">
         <h2>Japanese Verb Practice Arena</h2>
         <p class="lead">Select a training exercise below to build your muscle memory for -te and -ta conjugations.</p>
+        
+        <div style="display: inline-flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 2rem; background: rgba(0,0,0,0.15); padding: 8px 16px; border-radius: 15px; border: 1px solid var(--glass-border);">
+          <span style="color: var(--color-text-muted); font-size: 0.95rem; font-weight: 500;">Practice Level:</span>
+          <div class="segmented-control" style="min-width: 250px;">
+            <button class="seg-btn ${activeState.practiceLevel === "all" ? "active" : ""}" onclick="window.PRACTICE_MODULE.setPracticeLevel(this, 'all')">All Levels</button>
+            <button class="seg-btn ${activeState.practiceLevel === "N5" ? "active" : ""}" onclick="window.PRACTICE_MODULE.setPracticeLevel(this, 'N5')">N5 Only</button>
+            <button class="seg-btn ${activeState.practiceLevel === "N4" ? "active" : ""}" onclick="window.PRACTICE_MODULE.setPracticeLevel(this, 'N4')">N4 Only</button>
+          </div>
+        </div>
       </div>
 
       <div class="practice-modes-grid">
@@ -55,6 +72,14 @@ window.PRACTICE_MODULE = (function() {
           <p>Deconstruct verbs! Snap together the correct verb stem and ending suffix blocks (-nde, -tte, -te, etc.) to complete the conjugation.</p>
           <button class="action-btn primary-btn mt-auto" onclick="window.PRACTICE_MODULE.startSuffixBuilder()">Start Builder</button>
         </div>
+
+        <!-- Mode 4: ta koto ga aru Sentence Arena -->
+        <div class="glass-card mode-select-card" id="koto-mode-select">
+          <div class="mode-icon">⛰️</div>
+          <h3>〜たことがある Arena</h3>
+          <p>Practice past experience sentences! Conjugate N5/N4 verbs in a fill-in-the-blank interface to complete real Japanese sentences.</p>
+          <button class="action-btn primary-btn mt-auto" style="background: var(--cyan-accent); box-shadow: 0 4px 15px var(--cyan-accent-glow); color: #0b0914;" onclick="window.PRACTICE_MODULE.startKotoGaAruQuiz()">Launch Arena</button>
+        </div>
       </div>
     `;
   }
@@ -65,8 +90,13 @@ window.PRACTICE_MODULE = (function() {
 
   function startFlashcards() {
     activeState.mode = "cards";
-    // Shuffle verb database
-    activeState.verbsList = [...window.VERB_DATABASE].sort(() => 0.5 - Math.random());
+    // Filter verb database by level
+    let candidates = [...window.VERB_DATABASE];
+    if (activeState.practiceLevel !== "all") {
+      candidates = candidates.filter(v => v.level === activeState.practiceLevel);
+    }
+    // Shuffle
+    activeState.verbsList = candidates.sort(() => 0.5 - Math.random());
     activeState.currentIndex = 0;
     activeState.isCardFlipped = false;
     
@@ -97,11 +127,10 @@ window.PRACTICE_MODULE = (function() {
           <div class="card-side card-front glass-card">
             <span class="badge badge-g${verb.group}">Group ${verb.group}</span>
             <div class="card-japanese-main">
-              <span class="kanji-display">${verb.kanji}</span>
+              <span class="kanji-display"><span class="kanji-hover" data-read="${verb.hiragana}">${verb.kanji}</span></span>
               <span class="kana-display">${verb.hiragana}</span>
             </div>
             <div class="card-english">${verb.english}</div>
-            <div class="card-romaji">${verb.romaji}</div>
             <div class="card-action-cue">Click Card to Flip</div>
           </div>
 
@@ -111,13 +140,13 @@ window.PRACTICE_MODULE = (function() {
             <div class="conjugations-display">
               <div class="conj-block">
                 <span class="conj-label">-te Form</span>
-                <span class="conj-val-kanji">${verb.teForm}</span>
-                <span class="conj-val-kana">${verb.teHiragana} / ${verb.teRomaji}</span>
+                <span class="conj-val-kanji"><span class="kanji-hover" data-read="${verb.teHiragana}">${verb.teForm}</span></span>
+                <span class="conj-val-kana">${verb.teHiragana}</span>
               </div>
               <div class="conj-block">
                 <span class="conj-label">-ta Form</span>
-                <span class="conj-val-kanji">${verb.taForm}</span>
-                <span class="conj-val-kana">${verb.taHiragana} / ${verb.taRomaji}</span>
+                <span class="conj-val-kanji"><span class="kanji-hover" data-read="${verb.taHiragana}">${verb.taForm}</span></span>
+                <span class="conj-val-kana">${verb.taHiragana}</span>
               </div>
             </div>
             
@@ -229,8 +258,13 @@ window.PRACTICE_MODULE = (function() {
     activeState.score = 0;
     activeState.answersLog = [];
     
+    // Filter verb database by level
+    let candidates = [...window.VERB_DATABASE];
+    if (activeState.practiceLevel !== "all") {
+      candidates = candidates.filter(v => v.level === activeState.practiceLevel);
+    }
     // Choose N random verbs from database
-    const shuffled = [...window.VERB_DATABASE].sort(() => 0.5 - Math.random());
+    const shuffled = candidates.sort(() => 0.5 - Math.random());
     activeState.verbsList = shuffled.slice(0, Math.min(activeState.quizConfig.length, shuffled.length));
     activeState.totalQuestions = activeState.verbsList.length;
 
@@ -279,7 +313,7 @@ window.PRACTICE_MODULE = (function() {
       <div class="quiz-question-card glass-card">
         <div class="quiz-verb-prompt">
           <span class="badge badge-g${verb.group}">Group ${verb.group} Verb</span>
-          <h2>Conjugate: <span class="prompt-kanji">${verb.kanji}</span> <span class="prompt-kana">(${verb.hiragana})</span></h2>
+          <h2>Conjugate: <span class="prompt-kanji"><span class="kanji-hover" data-read="${verb.hiragana}">${verb.kanji}</span></span></h2>
           <div class="prompt-translation">Meaning: "${verb.english}"</div>
         </div>
 
@@ -367,7 +401,7 @@ window.PRACTICE_MODULE = (function() {
     
     interContainer.innerHTML = `
       <div class="text-input-wrapper">
-        <input type="text" id="quiz-typed-input" placeholder="Type Romaji (e.g. ${qModel.correctAnswerRomaji}) or Hiragana..." autocomplete="off" autofocus>
+        <input type="text" id="quiz-typed-input" placeholder="Type Hiragana (e.g. ${qModel.correctAnswerKana})..." autocomplete="off" autofocus>
         <div class="kana-live-preview">Kana translation: <strong id="live-kana-span"></strong></div>
         <button id="btn-submit-text-answer" class="action-btn primary-btn mt-3 w-full">Submit Answer</button>
       </div>
@@ -461,14 +495,14 @@ window.PRACTICE_MODULE = (function() {
       verb: q.verb,
       form: q.form,
       isCorrect: isCorrect,
-      correctString: `${q.correctAnswerKanji} (${q.correctAnswerKana} - ${q.correctAnswerRomaji})`
+      correctString: `<span class="kanji-hover" data-read="${q.correctAnswerKana}">${q.correctAnswerKanji}</span> (${q.correctAnswerKana})`
     });
 
     feedbackBox.innerHTML = `
       <div class="feedback-card ${isCorrect ? "fb-correct" : "fb-incorrect"} animate-pop">
         <div class="fb-icon">${isCorrect ? "✅ Correct!" : "❌ Incorrect"}</div>
         <div class="fb-detail">
-          <p>Correct conjugation: <span class="fb-correct-ans">${q.correctAnswerKanji}</span> (${q.correctAnswerKana})</p>
+          <p>Correct conjugation: <span class="fb-correct-ans"><span class="kanji-hover" data-read="${q.correctAnswerKana}">${q.correctAnswerKanji}</span></span> (${q.correctAnswerKana})</p>
           <p class="fb-rule"><strong>Rule:</strong> ${q.verb.explanation}</p>
         </div>
         <button id="btn-next-question" class="action-btn primary-btn mt-2">Next Question &rarr;</button>
@@ -540,7 +574,12 @@ window.PRACTICE_MODULE = (function() {
 
   function startSuffixBuilder() {
     activeState.mode = "builder";
-    activeState.verbsList = [...window.VERB_DATABASE].sort(() => 0.5 - Math.random());
+    // Filter verb database by level
+    let candidates = [...window.VERB_DATABASE];
+    if (activeState.practiceLevel !== "all") {
+      candidates = candidates.filter(v => v.level === activeState.practiceLevel);
+    }
+    activeState.verbsList = candidates.sort(() => 0.5 - Math.random());
     activeState.currentIndex = 0;
     activeState.score = 0;
     
@@ -629,7 +668,7 @@ window.PRACTICE_MODULE = (function() {
       <div class="builder-arena glass-card">
         <div class="builder-prompt">
           <span class="badge badge-g${verb.group}">Group ${verb.group}</span>
-          <h2>Assemble Conjugation: <strong>${verb.kanji}</strong> (${verb.english})</h2>
+          <h2>Assemble Conjugation: <strong><span class="kanji-hover" data-read="${verb.hiragana}">${verb.kanji}</span></strong> (${verb.english})</h2>
           <div class="builder-target-tag">Target Form: <strong>-${form} Form</strong></div>
         </div>
 
@@ -768,12 +807,156 @@ window.PRACTICE_MODULE = (function() {
     initPracticePortal("practice-container");
   }
 
+  // ==========================================
+  // ~TA KOTO GA ARU SENTENCE ARENA
+  // ==========================================
+
+  function startKotoGaAruQuiz() {
+    activeState.mode = "koto";
+    activeState.currentIndex = 0;
+    activeState.score = 0;
+    activeState.answersLog = [];
+    
+    // Shuffle the sentences database
+    const shuffled = [...window.KOTO_GA_ARU_SENTENCES].sort(() => 0.5 - Math.random());
+    activeState.verbsList = shuffled; // here verbsList holds the sentence objects
+    activeState.totalQuestions = shuffled.length;
+
+    renderKotoGaAruQuestion();
+  }
+
+  function renderKotoGaAruQuestion() {
+    const container = document.getElementById("practice-container");
+    if (!container) return;
+
+    if (activeState.currentIndex >= activeState.totalQuestions) {
+      showPracticeCompletion("Sentence Arena Completed!", `Splendid! You completed all ${activeState.totalQuestions} sentences in the arena.`);
+      return;
+    }
+
+    const item = activeState.verbsList[activeState.currentIndex];
+
+    // Build fill-in-the-blank input HTML
+    // We replace "________" with a styled blank text box
+    const sentenceParts = item.sentencePattern.split("________");
+    const part1 = sentenceParts[0];
+    const part2 = sentenceParts[1] || "";
+
+    container.innerHTML = `
+      <div class="practice-header">
+        <button class="back-link" onclick="window.PRACTICE_MODULE.exitToPortal()">&larr; Exit to Practice Menu</button>
+        <span class="progress-indicator">Sentence ${activeState.currentIndex + 1} of ${activeState.totalQuestions}</span>
+      </div>
+
+      <div class="quiz-question-card glass-card">
+        <div class="quiz-verb-prompt">
+          <span class="badge badge-g2" style="background: rgba(0, 222, 201, 0.25); color: #00dec9; border: 1px solid rgba(0, 222, 201, 0.4);">Experience Grammar</span>
+          <h2>〜たことがある (Koto ga aru)</h2>
+          <div class="prompt-translation" style="margin-top: 10px; font-size: 1.15rem; font-style: italic; color: #fff;">
+            "${item.englishTranslation}"
+          </div>
+        </div>
+
+        <div class="sentence-fill-container" style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 2rem 0; font-size: 1.6rem; font-family: var(--font-ja);">
+          <span>${part1}</span>
+          <div class="fill-input-wrapper" style="position: relative;">
+            <input type="text" id="koto-typed-input" placeholder="た-form..." autocomplete="off" autofocus 
+                   style="background: rgba(0, 0, 0, 0.4); border: 2px dashed var(--cyan-accent); border-radius: 8px; padding: 6px 12px; font-size: 1.4rem; color: #fff; width: 160px; text-align: center; font-family: var(--font-ja); outline: none;">
+          </div>
+          <span>${part2}</span>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 1.5rem; color: var(--color-text-muted); font-size: 0.95rem;">
+          Conjugate this verb: <strong>${item.dictionaryForm}</strong> (${item.verbMeaning})
+          <div class="kana-live-preview">Kana translation: <strong id="koto-live-kana"></strong></div>
+        </div>
+
+        <button id="btn-submit-koto-answer" class="action-btn primary-btn mt-3 w-full mx-auto" style="display: block;">Submit Sentence</button>
+        
+        <div id="koto-feedback" class="quiz-feedback-box hidden"></div>
+      </div>
+    `;
+
+    const input = document.getElementById("koto-typed-input");
+    const preview = document.getElementById("koto-live-kana");
+    const submitBtn = document.getElementById("btn-submit-koto-answer");
+
+    // Live Romaji to Hiragana conversion
+    input.addEventListener("input", (e) => {
+      const val = e.target.value;
+      const converted = window.romajiToHiragana(val);
+      preview.innerText = converted;
+    });
+
+    // Enter key submit
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        submitBtn.click();
+      }
+    });
+
+    submitBtn.addEventListener("click", () => {
+      const rawVal = input.value.trim();
+      const convertedVal = preview.innerText.trim();
+      checkKotoAnswer(rawVal, convertedVal, item);
+    });
+  }
+
+  function checkKotoAnswer(rawVal, convertedVal, item) {
+    // Check correct values
+    const isCorrect = (
+      rawVal === item.correctConjugation ||
+      convertedVal === item.correctHiragana ||
+      rawVal.toLowerCase() === item.correctRomaji
+    );
+
+    const input = document.getElementById("koto-typed-input");
+    const submitBtn = document.getElementById("btn-submit-koto-answer");
+    if (input) input.disabled = true;
+    if (submitBtn) submitBtn.disabled = true;
+
+    if (input) {
+      if (isCorrect) {
+        input.style.borderColor = "var(--color-success)";
+        input.style.background = "rgba(85, 239, 196, 0.05)";
+        input.style.boxShadow = "0 0 10px rgba(85, 239, 196, 0.3)";
+      } else {
+        input.style.borderColor = "var(--color-danger)";
+        input.style.background = "rgba(255, 118, 117, 0.05)";
+        input.style.boxShadow = "0 0 10px rgba(255, 118, 117, 0.3)";
+      }
+    }
+
+    const feedback = document.getElementById("koto-feedback");
+    feedback.innerHTML = `
+      <div class="feedback-card ${isCorrect ? "fb-correct" : "fb-incorrect"} animate-pop">
+        <div class="fb-icon">${isCorrect ? "🎉 Correct!" : "❌ Try Again!"}</div>
+        <div class="fb-detail">
+          <p>Complete Sentence: <strong style="font-family: var(--font-ja); color: #fff; font-size: 1.15rem;">
+            ${item.sentencePattern.replace("________", item.correctConjugation)}
+          </strong></p>
+          <p>English: "${item.englishTranslation}"</p>
+          <p class="fb-rule"><strong>Verb breakdown:</strong> '${item.dictionaryForm}' conjugates to '<strong>${item.correctConjugation}</strong>' in the past plain (-ta) form before adding 'koto ga aru'.</p>
+        </div>
+        <button id="btn-next-koto" class="action-btn primary-btn mt-2">Next Sentence &rarr;</button>
+      </div>
+    `;
+    feedback.classList.remove("hidden");
+
+    document.getElementById("btn-next-koto").addEventListener("click", () => {
+      activeState.currentIndex++;
+      renderKotoGaAruQuestion();
+    });
+  }
+
   return {
     init: initPracticePortal,
+    setPracticeLevel,
     startFlashcards,
     showQuizSettings,
     startQuiz,
     startSuffixBuilder,
+    startKotoGaAruQuiz,
     setSeg,
     checkChoiceAnswer,
     selectSuffixBlock,

@@ -1922,3 +1922,36 @@ p.lead {
     grid-template-columns: 1fr;
   }
 }
+
+/* --- Kanji Hover Tooltip --- */
+.kanji-hover {
+  position: relative;
+  cursor: help;
+  border-bottom: 1px dashed var(--cyan-accent);
+}
+
+.kanji-hover::after {
+  content: attr(data-read);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-primary);
+  border: 1px solid var(--glass-border);
+  color: var(--sakura-pink);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-family: var(--font-ja);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: var(--transition-fast);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  z-index: 100;
+}
+
+.kanji-hover:hover::after {
+  opacity: 1;
+  bottom: 135%;
+}

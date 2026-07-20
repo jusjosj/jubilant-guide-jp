@@ -1,5 +1,5 @@
-// Lessons and Conjugation Simulator Module
-// Handles rendering lessons, the mnemonic song visualizer, and the step-by-step simulator.
+// Lesson Sequence & Mnemonic Rule Content
+// Defines static lesson slides, the mnemonic conjugation song, and interactive sandbox visualizer.
 
 window.LESSONS_MODULE = (function() {
   let currentSlideIndex = 0;
@@ -17,24 +17,24 @@ window.LESSONS_MODULE = (function() {
             <h3>Godan (五段)</h3>
             <p class="desc">Also called "U-verbs". Their dictionary forms end in various "u" column Hiragana:</p>
             <ul class="example-list">
-              <li>う (u) - 買う <span>(kau - buy)</span></li>
-              <li>つ (tsu) - 待つ <span>(matsu - wait)</span></li>
-              <li>る (ru) - 取る <span>(toru - take)</span></li>
-              <li>む (mu), ぶ (bu), ぬ (nu)</li>
-              <li>く (ku), ぐ (gu), す (su)</li>
+              <li>う - <span class="kanji-hover" data-read="かう">買う</span> <span>(buy)</span></li>
+              <li>つ - <span class="kanji-hover" data-read="まつ">待つ</span> <span>(wait)</span></li>
+              <li>る - <span class="kanji-hover" data-read="とる">取る</span> <span>(take)</span></li>
+              <li>む, ぶ, ぬ</li>
+              <li>く, ぐ, す</li>
             </ul>
           </div>
 
           <div class="glass-card group-card group-2">
             <span class="badge badge-g2">Group 2</span>
             <h3>Ichidan (一段)</h3>
-            <p class="desc">Also called "Ru-verbs". Almost all end in either <strong>-iru</strong> or <strong>-eru</strong>:</p>
+            <p class="desc">Also called "Ru-verbs". Almost all end in either <strong>-iru</strong> or <strong>-eru</strong> in their readings:</p>
             <ul class="example-list">
-              <li>いる (iru) - 見る <span>(miru - see)</span></li>
-              <li>える (eru) - 食べる <span>(taberu - eat)</span></li>
+              <li>いる - <span class="kanji-hover" data-read="みる">見る</span> <span>(see)</span></li>
+              <li>える - <span class="kanji-hover" data-read="たべる">食べる</span> <span>(eat)</span></li>
             </ul>
             <div class="warning-tip">
-              <strong>Note:</strong> Some verbs look like Ichidan but conjugate as Godan (e.g., 帰る kaeru - to return). We will learn these exceptions!
+              <strong>Note:</strong> Some verbs look like Ichidan but conjugate as Godan (e.g., <span class="kanji-hover" data-read="かえる">帰る</span> - to return). We will learn these exceptions!
             </div>
           </div>
 
@@ -43,8 +43,8 @@ window.LESSONS_MODULE = (function() {
             <h3>Irregular</h3>
             <p class="desc">There are only two irregular verbs in Japanese. You just have to memorize them!</p>
             <ul class="example-list">
-              <li>する <span>(suru - to do)</span></li>
-              <li>来る <span>(kuru - to come)</span></li>
+              <li><span class="kanji-hover" data-read="する">する</span> <span>(to do)</span></li>
+              <li><span class="kanji-hover" data-read="くる">来る</span> <span>(to come)</span></li>
             </ul>
           </div>
         </div>
@@ -64,14 +64,14 @@ window.LESSONS_MODULE = (function() {
               <span class="math-op">- る</span>
               <span class="math-op">+ て / た</span>
             </div>
-            <p>Simply drop the final <strong>る (ru)</strong> and add <strong>て (te)</strong> or <strong>た (ta)</strong>.</p>
+            <p>Simply drop the final <strong>る</strong> and add <strong>て</strong> or <strong>た</strong>.</p>
             <table class="lesson-table">
               <thead>
                 <tr><th>Meaning</th><th>Dictionary</th><th>Drop る</th><th>-te Form</th><th>-ta Form</th></tr>
               </thead>
               <tbody>
-                <tr><td>to eat</td><td>たべる (taberu)</td><td>たべ</td><td class="hl-te">たべて (tabete)</td><td class="hl-ta">たべた (tabeta)</td></tr>
-                <tr><td>to see</td><td>みる (miru)</td><td>み</td><td class="hl-te">みて (mite)</td><td class="hl-ta">みた (mita)</td></tr>
+                <tr><td>to eat</td><td><span class="kanji-hover" data-read="たべる">食べる</span> (たべる)</td><td>たべ</td><td class="hl-te">たべて</td><td class="hl-ta">たべた</td></tr>
+                <tr><td>to see</td><td><span class="kanji-hover" data-read="みる">見る</span> (みる)</td><td>み</td><td class="hl-te">みて</td><td class="hl-ta">みた</td></tr>
               </tbody>
             </table>
           </div>
@@ -84,8 +84,8 @@ window.LESSONS_MODULE = (function() {
                 <tr><th>Meaning</th><th>Dictionary</th><th>-te Form</th><th>-ta Form</th></tr>
               </thead>
               <tbody>
-                <tr><td>to do</td><td>する (suru)</td><td class="hl-te">して (shite)</td><td class="hl-ta">した (shita)</td></tr>
-                <tr><td>to come</td><td>くる (kuru)</td><td class="hl-te">きて (kite / 来て)</td><td class="hl-ta">きた (kita / 来た)</td></tr>
+                <tr><td>to do</td><td>する</td><td class="hl-te">して</td><td class="hl-ta">した</td></tr>
+                <tr><td>to come</td><td><span class="kanji-hover" data-read="くる">来る</span> (くる)</td><td class="hl-te"><span class="kanji-hover" data-read="きて">来て</span> (きて)</td><td class="hl-ta"><span class="kanji-hover" data-read="きた">来た</span> (きた)</td></tr>
               </tbody>
             </table>
           </div>
@@ -96,7 +96,7 @@ window.LESSONS_MODULE = (function() {
       title: "Group 1 (Godan) - The Conjugation Song",
       type: "song-mnemonic",
       content: `
-        <p class="lead">Group 1 verbs conjugate based on their <strong>final syllable</strong>. Japanese students learn this through a famous mnemonic song set to the tune of <em>"Oh My Darling, Clementine"</em> or <em>"London Bridge is Falling Down"</em>.</p>
+        <p class="lead">Group 1 verbs conjugate based on their <strong>final syllable</strong>. Japanese students learn this through a famous mnemonic song set to the tune of <em>"Oh My Darling, Clementine"</em>.</p>
         
         <div class="song-visualizer-section">
           <div class="song-column">
@@ -105,23 +105,23 @@ window.LESSONS_MODULE = (function() {
             <div class="song-lines">
               <div class="song-line" data-rule="u-tsu-ru">
                 <span class="music-icon">🎵</span>
-                <span class="lyrics"><strong>う、つ、る</strong> (u, tsu, ru) &rarr; <strong>って</strong> (tte)</span>
+                <span class="lyrics"><strong>う、つ、る</strong> &rarr; <strong>って</strong></span>
               </div>
               <div class="song-line" data-rule="mu-bu-nu">
                 <span class="music-icon">🎵</span>
-                <span class="lyrics"><strong>む、ぶ、ぬ</strong> (mu, bu, nu) &rarr; <strong>んで</strong> (nde)</span>
+                <span class="lyrics"><strong>む、ぶ、ぬ</strong> &rarr; <strong>んで</strong></span>
               </div>
               <div class="song-line" data-rule="ku">
                 <span class="music-icon">🎵</span>
-                <span class="lyrics"><strong>く</strong> (ku) &rarr; <strong>いて</strong> (ite) <span class="exception-note">[行く &rarr; って]</span></span>
+                <span class="lyrics"><strong>く</strong> &rarr; <strong>いて</strong> <span class="exception-note">[<span class="kanji-hover" data-read="いく">行く</span> &rarr; って]</span></span>
               </div>
               <div class="song-line" data-rule="gu">
                 <span class="music-icon">🎵</span>
-                <span class="lyrics"><strong>ぐ</strong> (gu) &rarr; <strong>いで</strong> (ide)</span>
+                <span class="lyrics"><strong>ぐ</strong> &rarr; <strong>いで</strong></span>
               </div>
               <div class="song-line" data-rule="su">
                 <span class="music-icon">🎵</span>
-                <span class="lyrics"><strong>す</strong> (su) &rarr; <strong>して</strong> (shite)</span>
+                <span class="lyrics"><strong>す</strong> &rarr; <strong>して</strong></span>
               </div>
             </div>
           </div>
@@ -129,8 +129,53 @@ window.LESSONS_MODULE = (function() {
           <div class="song-details-column">
             <div id="song-rule-details" class="glass-card details-card">
               <div class="placeholder-text">
-                <p>💡 Click on any song line to learn the conjugation rule, see example verbs, and listen to the pattern rhythm!</p>
+                <p>💡 Click on any song line to learn the conjugation rule, see example verbs, and hover over Kanji to check their readings!</p>
               </div>
+            </div>
+          </div>
+        </div>
+      `
+    },
+    {
+      title: "Expressing Experience: 〜たことがある",
+      type: "grammar-exp",
+      content: `
+        <p class="lead">Now that you know how to conjugate verbs into the <strong>-ta (た) form</strong>, you can immediately build the common grammar structure: <strong>〜たことがある</strong> (to have the experience of doing something).</p>
+        
+        <div class="rules-container">
+          <div class="glass-card rule-box">
+            <h3>Structure & Usage</h3>
+            <div class="formula">
+              <span class="math-term">Verb in -ta form (た形)</span>
+              <span class="math-op">+ ことがある / ことがあります</span>
+            </div>
+            <p>This grammar point is equivalent to saying <em>"I have done [verb] before"</em> in English. To make it polite, change <strong>ある</strong> to <strong>あります</strong>.</p>
+            
+            <table class="lesson-table" style="margin-top: 1.5rem;">
+              <thead>
+                <tr><th>Base Verb</th><th>-ta Form</th><th>Experience Pattern</th><th>Meaning</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><span class="kanji-hover" data-read="いく">行く</span> (いく)</td><td>いった</td><td><span class="kanji-hover" data-read="いった">行った</span>ことがある</td><td>I have been there before.</td></tr>
+                <tr><td><span class="kanji-hover" data-read="たべる">食べる</span> (たべる)</td><td>たべた</td><td><span class="kanji-hover" data-read="たべた">食べた</span>ことがあります</td><td>I have eaten it before.</td></tr>
+                <tr><td>する</td><td>した</td><td>したことがありますか</td><td>Have you ever done it?</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="glass-card rule-box">
+            <h3>Negative Form: "Have Never Done..."</h3>
+            <p>To say you have <em>never</em> experienced something, simply change <strong>ある</strong> to its negative form: <strong>ない</strong> (casual) or <strong>ありません</strong> (polite).</p>
+            
+            <div class="formula" style="background: rgba(255, 118, 117, 0.08); border-color: rgba(255, 118, 117, 0.25);">
+              <span class="math-term" style="color: #fff;">Verb in -ta form</span>
+              <span class="math-op" style="color: var(--color-danger);">+ ことがない / ことはありません</span>
+            </div>
+
+            <div class="warning-tip" style="background: rgba(108, 92, 231, 0.08); border-color: rgba(108, 92, 231, 0.2); color: var(--color-text);">
+              <strong>Examples:</strong><br>
+              • <span class="kanji-hover" data-read="ふじさん">富士山</span>に<span class="kanji-hover" data-read="のぼった">登った</span><strong>ことがない</strong>。 (I have never climbed Mt. Fuji.)<br>
+              • <span class="kanji-hover" data-read="にほんしゅ">日本酒</span>を<span class="kanji-hover" data-read="のんだ">飲んだ</span><strong>ことはありません</strong>。 (I have never drunk Japanese sake.)
             </div>
           </div>
         </div>
@@ -160,11 +205,11 @@ window.LESSONS_MODULE = (function() {
             <div class="verb-info-card">
               <div class="verb-main-display">
                 <h2 id="sim-info-kanji">買う</h2>
-                <div id="sim-info-romaji">kau (to buy)</div>
+                <div id="sim-info-romaji">かう (to buy)</div>
               </div>
               <div class="verb-meta-row">
                 <div><strong>Group:</strong> <span id="sim-info-group">Group 1 (Godan)</span></div>
-                <div><strong>Suffix:</strong> <span id="sim-info-suffix">う (u)</span></div>
+                <div><strong>Suffix:</strong> <span id="sim-info-suffix">う</span></div>
               </div>
             </div>
           </div>
@@ -206,49 +251,49 @@ window.LESSONS_MODULE = (function() {
 
   const songRules = {
     "u-tsu-ru": {
-      title: "う (u), つ (tsu), る (ru) &rarr; って (tte) / った (tta)",
+      title: "う, つ, る &rarr; って / った",
       formula: "Drop last syllable, add って (te-form) or った (ta-form).",
       examples: [
-        { dict: "買う (kau)", te: "買って (katte)", ta: "買った (katta)", meaning: "to buy" },
-        { dict: "待つ (matsu)", te: "待って (matte)", ta: "待った (matta)", meaning: "to wait" },
-        { dict: "取る (toru)", te: "取って (totte)", ta: "取った (totta)", meaning: "to take" }
+        { dict: '<span class="kanji-hover" data-read="かう">買う</span> (かう)', te: '<span class="kanji-hover" data-read="かって">買って</span>', ta: '<span class="kanji-hover" data-read="かった">買った</span>', meaning: "to buy" },
+        { dict: '<span class="kanji-hover" data-read="まつ">待つ</span> (まつ)', te: '<span class="kanji-hover" data-read="まって">待って</span>', ta: '<span class="kanji-hover" data-read="まった">待った</span>', meaning: "to wait" },
+        { dict: '<span class="kanji-hover" data-read="とる">取る</span> (とる)', te: '<span class="kanji-hover" data-read="とって">取って</span>', ta: '<span class="kanji-hover" data-read="とった">取った</span>', meaning: "to take" }
       ],
-      note: "<strong>Exception:</strong> 帰る (kaeru - to return) is a Godan verb despite ending in -eru, so it conjugates to 帰って / 帰った!"
+      note: `<strong>Exception:</strong> <span class="kanji-hover" data-read="かえる">帰る</span> (to return) is a Godan verb despite ending in -eru, so it conjugates to <span class="kanji-hover" data-read="かえって">帰って</span> / <span class="kanji-hover" data-read="かえった">帰った</span>!`
     },
     "mu-bu-nu": {
-      title: "む (mu), ぶ (bu), ぬ (nu) &rarr; んで (nde) / んだ (nda)",
-      formula: "Drop last syllable, add んで (te-form) or んだ (ta-form). Note the voiced d (濁音)!",
+      title: "む, ぶ, ぬ &rarr; んで / んだ",
+      formula: "Drop last syllable, add んで (te-form) or んだ (ta-form). Note the voiced sound (濁音)!",
       examples: [
-        { dict: "飲む (nomu)", te: "飲んで (nonde)", ta: "飲んだ (nonda)", meaning: "to drink" },
-        { dict: "遊ぶ (asobu)", te: "遊んで (asonde)", ta: "遊んだ (asonda)", meaning: "to play" },
-        { dict: "死ぬ (shinu)", te: "死んで (shinde)", ta: "死んだ (shinda)", meaning: "to die" }
+        { dict: '<span class="kanji-hover" data-read="のむ">飲む</span> (のむ)', te: '<span class="kanji-hover" data-read="のんで">飲んで</span>', ta: '<span class="kanji-hover" data-read="のんだ">飲んだ</span>', meaning: "to drink" },
+        { dict: '<span class="kanji-hover" data-read="あそぶ">遊ぶ</span> (あそぶ)', te: '<span class="kanji-hover" data-read="あそんで">遊んで</span>', ta: '<span class="kanji-hover" data-read="あそんだ">遊んだ</span>', meaning: "to play" },
+        { dict: '<span class="kanji-hover" data-read="しぬ">死ぬ</span> (しぬ)', te: '<span class="kanji-hover" data-read="しんで">死んで</span>', ta: '<span class="kanji-hover" data-read="しんだ">死んだ</span>', meaning: "to die" }
       ],
-      note: "<strong>Deadly Fact:</strong> 'Shinu' (死ぬ - to die) is the only verb in the entire Japanese language that ends in 'nu'."
+      note: `<strong>Deadly Fact:</strong> <span class="kanji-hover" data-read="しぬ">死ぬ</span> (to die) is the only verb in the entire Japanese language that ends in 'nu'.`
     },
     "ku": {
-      title: "く (ku) &rarr; いて (ite) / いた (ita)",
+      title: "く &rarr; いて / いた",
       formula: "Drop く, add いて (te-form) or いた (ta-form).",
       examples: [
-        { dict: "書く (kaku)", te: "書いて (kaite)", ta: "書いた (kaita)", meaning: "to write" },
-        { dict: "聞く (kiku)", te: "聞いて (kiite)", ta: "聞いた (kiita)", meaning: "to listen/ask" }
+        { dict: '<span class="kanji-hover" data-read="かく">書く</span> (かく)', te: '<span class="kanji-hover" data-read="かいて">書いて</span>', ta: '<span class="kanji-hover" data-read="かいた">書いた</span>', meaning: "to write" },
+        { dict: '<span class="kanji-hover" data-read="きく">聞く</span> (きく)', te: '<span class="kanji-hover" data-read="きいて">聞いて</span>', ta: '<span class="kanji-hover" data-read="きいた">聞いた</span>', meaning: "to listen/ask" }
       ],
-      note: "<strong>🚨 MAJOR EXCEPTION:</strong> 行く (iku - to go) is irregular in this subgroup. It conjugating to <strong>行って (itte) / 行った (itta)</strong> instead of iite / iita!"
+      note: `<strong>🚨 MAJOR EXCEPTION:</strong> <span class="kanji-hover" data-read="いく">行く</span> (to go) is irregular in this subgroup. It conjugates to <strong><span class="kanji-hover" data-read="いって">行って</span> / <span class="kanji-hover" data-read="いった">行った</span></strong> instead of iite / iita!`
     },
     "gu": {
-      title: "ぐ (gu) &rarr; いで (ide) / いだ (ida)",
+      title: "ぐ &rarr; いで / いだ",
       formula: "Drop ぐ, add いで (te-form) or いだ (ida-form). Think of it like the 'ku' rule, but voiced (with ten-ten)!",
       examples: [
-        { dict: "泳ぐ (oyogu)", te: "泳いで (oyoide)", ta: "泳いだ (oyoida)", meaning: "to swim" },
-        { dict: "急ぐ (isogu)", te: "急いで (isoide)", ta: "急いだ (isoida)", meaning: "to hurry" }
+        { dict: '<span class="kanji-hover" data-read="およぐ">泳ぐ</span> (およぐ)', te: '<span class="kanji-hover" data-read="およいで">泳いで</span>', ta: '<span class="kanji-hover" data-read="およいだ">泳いだ</span>', meaning: "to swim" },
+        { dict: '<span class="kanji-hover" data-read="いそぐ">急ぐ</span> (いそぐ)', te: '<span class="kanji-hover" data-read="いそいで">急いで</span>', ta: '<span class="kanji-hover" data-read="いそいだ">急いだ</span>', meaning: "to hurry" }
       ],
-      note: "Because 'gu' is voiced, the suffixes 'te' and 'ta' also become voiced ('de' and 'da')."
+      note: `Because 'gu' is voiced, the suffixes 'te' and 'ta' also become voiced ('de' and 'da').`
     },
     "su": {
-      title: "す (su) &rarr; して (shite) / した (shita)",
+      title: "す &rarr; して / した",
       formula: "Drop す, add して (te-form) or した (ta-form).",
       examples: [
-        { dict: "話す (hanasu)", te: "話して (hanashite)", ta: "話した (hanashita)", meaning: "to speak" },
-        { dict: "貸す (kasu)", te: "貸して (kashite)", ta: "貸した (kashita)", meaning: "to lend" }
+        { dict: '<span class="kanji-hover" data-read="はなす">話す</span> (はなす)', te: '<span class="kanji-hover" data-read="はなして">話して</span>', ta: '<span class="kanji-hover" data-read="はなした">話した</span>', meaning: "to speak" },
+        { dict: '<span class="kanji-hover" data-read="かす">貸す</span> (かす)', te: '<span class="kanji-hover" data-read="かして">貸して</span>', ta: '<span class="kanji-hover" data-read="かした">貸した</span>', meaning: "to lend" }
       ],
       note: "This matches the conjugation of the irregular verb 'suru' (する &rarr; して)."
     }
@@ -419,11 +464,10 @@ window.LESSONS_MODULE = (function() {
     if (!v) return;
 
     const isTe = simulatorState.form === "te";
-    const targetSuffix = isTe ? "て" : "た";
     
-    // Update basic display info
-    document.getElementById("sim-info-kanji").innerText = v.kanji;
-    document.getElementById("sim-info-romaji").innerText = `${v.romaji} (${v.english})`;
+    // Update basic display info with Hiragana hover reading
+    document.getElementById("sim-info-kanji").innerHTML = `<span class="kanji-hover" data-read="${v.hiragana}">${v.kanji}</span>`;
+    document.getElementById("sim-info-romaji").innerText = `${v.hiragana} (${v.english})`;
     
     let groupText = `Group ${v.group}`;
     if (v.group === 1) groupText += " (Godan)";
@@ -432,40 +476,25 @@ window.LESSONS_MODULE = (function() {
     document.getElementById("sim-info-group").innerText = groupText;
 
     let suffixChar = v.hiragana.slice(-1);
-    document.getElementById("sim-info-suffix").innerText = `${suffixChar} (${v.subtype})`;
+    document.getElementById("sim-info-suffix").innerText = `${suffixChar}`;
 
     // Pipeline Step 1: Stem & Ending Split
     const step1Div = document.getElementById("viz-step-1");
     let stem = "";
     let ending = "";
-    let romajiStem = "";
-    let romajiEnding = "";
 
     if (v.group === 2) {
       // Ichidan
       stem = v.hiragana.slice(0, -1);
       ending = "る";
-      romajiStem = v.romaji.slice(0, -2); // drop "ru"
-      romajiEnding = "ru";
     } else if (v.group === 3) {
       // Irregular
       stem = v.hiragana === "する" ? "す" : "く";
       ending = "る";
-      romajiStem = v.romaji.slice(0, -2);
-      romajiEnding = "ru";
     } else {
       // Godan
       stem = v.hiragana.slice(0, -1);
       ending = v.hiragana.slice(-1);
-      
-      // Rough Romaji stem split
-      if (v.subtype === "tsu") {
-        romajiStem = v.romaji.slice(0, -5); // e.g. matsu -> ma
-        romajiEnding = "tsu";
-      } else {
-        romajiStem = v.romaji.slice(0, -1);
-        romajiEnding = v.romaji.slice(-1);
-      }
     }
 
     step1Div.innerHTML = `
@@ -473,11 +502,6 @@ window.LESSONS_MODULE = (function() {
         <span class="stem-part" title="Verb Stem">${stem}</span>
         <span class="plus-sign">+</span>
         <span class="ending-part" title="Dictionary Ending">${ending}</span>
-      </div>
-      <div class="romaji-parts">
-        <span>${romajiStem}</span>
-        <span></span>
-        <span>${romajiEnding}</span>
       </div>
     `;
 
@@ -545,13 +569,11 @@ window.LESSONS_MODULE = (function() {
     const step3Div = document.getElementById("viz-step-3");
     let finalFormKanji = isTe ? v.teForm : v.taForm;
     let finalFormKana = isTe ? v.teHiragana : v.taHiragana;
-    let finalFormRomaji = isTe ? v.teRomaji : v.taRomaji;
 
     step3Div.innerHTML = `
       <div class="final-viz">
-        <div class="kanji-large">${finalFormKanji}</div>
+        <div class="kanji-large"><span class="kanji-hover" data-read="${finalFormKana}">${finalFormKanji}</span></div>
         <div class="kana-sub">${finalFormKana}</div>
-        <div class="romaji-sub">${finalFormRomaji}</div>
       </div>
     `;
 
@@ -561,7 +583,7 @@ window.LESSONS_MODULE = (function() {
     if (v.group === 1) {
       explText += `Since <strong>${v.kanji}</strong> ends in <strong>${ending}</strong>, it belongs to the <strong>${v.subtype}</strong> subcategory. `;
     }
-    explText += `The conjugation resulting in the <strong>-${simulatorState.form} Form</strong> is <strong>${finalFormKanji}</strong> (${finalFormRomaji}).`;
+    explText += `The conjugation resulting in the <strong>-${simulatorState.form} Form</strong> is <strong>${finalFormKanji}</strong>.`;
 
     expDiv.innerHTML = explText;
     

@@ -196,19 +196,18 @@ window.APP_ROUTER = (function() {
   function updateSandboxVerb(verb) {
     if (!verb) return;
 
-    document.getElementById("sand-display-kanji").innerText = verb.kanji;
+    document.getElementById("sand-display-kanji").innerHTML = `<span class="kanji-hover" data-read="${verb.hiragana}">${verb.kanji}</span>`;
     document.getElementById("sand-display-hiragana").innerText = verb.hiragana;
-    document.getElementById("sand-display-romaji").innerText = verb.romaji;
     document.getElementById("sand-display-meaning").innerText = verb.english;
     
     document.getElementById("sand-display-group").innerText = verb.group;
     document.getElementById("sand-display-subtype").innerText = verb.subtype;
 
-    document.getElementById("sand-res-te").innerText = verb.teForm;
-    document.getElementById("sand-res-te-info").innerText = `${verb.teHiragana} / ${verb.teRomaji}`;
+    document.getElementById("sand-res-te").innerHTML = `<span class="kanji-hover" data-read="${verb.teHiragana}">${verb.teForm}</span>`;
+    document.getElementById("sand-res-te-info").innerText = verb.teHiragana;
 
-    document.getElementById("sand-res-ta").innerText = verb.taForm;
-    document.getElementById("sand-res-ta-info").innerText = `${verb.taHiragana} / ${verb.taRomaji}`;
+    document.getElementById("sand-res-ta").innerHTML = `<span class="kanji-hover" data-read="${verb.taHiragana}">${verb.taForm}</span>`;
+    document.getElementById("sand-res-ta-info").innerText = verb.taHiragana;
 
     document.getElementById("sandbox-explanation-text").innerHTML = `
       <strong>Sandbox Diagnosis:</strong> ${verb.explanation} 
@@ -220,6 +219,7 @@ window.APP_ROUTER = (function() {
 
   // --- Dictionary/Index Logic ---
   let activeFilter = "all"; // "all", "1", "2", "3"
+  let activeLvlFilter = "all"; // "all", "N5", "N4"
 
   function setupDictionary() {
     const searchInput = document.getElementById("dict-search");
@@ -249,6 +249,28 @@ window.APP_ROUTER = (function() {
       }
     });
 
+    // Load level filter buttons
+    const lvlFilterButtons = [
+      { id: "btn-filter-lvl-all", filter: "all" },
+      { id: "btn-filter-lvl-n5", filter: "N5" },
+      { id: "btn-filter-lvl-n4", filter: "N4" }
+    ];
+
+    lvlFilterButtons.forEach(cfg => {
+      const btn = document.getElementById(cfg.id);
+      if (btn) {
+        btn.addEventListener("click", () => {
+          lvlFilterButtons.forEach(c => {
+            const b = document.getElementById(c.id);
+            if (b) b.classList.remove("active");
+          });
+          btn.classList.add("active");
+          activeLvlFilter = cfg.filter;
+          renderDictionaryTable();
+        });
+      }
+    });
+
     searchInput.addEventListener("input", renderDictionaryTable);
 
     // Initial render
@@ -268,6 +290,11 @@ window.APP_ROUTER = (function() {
       filtered = filtered.filter(v => v.group === targetGroup);
     }
 
+    // Apply Level filters
+    if (activeLvlFilter !== "all") {
+      filtered = filtered.filter(v => v.level === activeLvlFilter);
+    }
+
     // Apply Search matches
     if (searchVal) {
       filtered = filtered.filter(v => 
@@ -283,7 +310,7 @@ window.APP_ROUTER = (function() {
     if (filtered.length === 0) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="7" class="text-center" style="color: var(--color-text-muted); padding: 2rem;">
+          <td colspan="8" class="text-center" style="color: var(--color-text-muted); padding: 2rem;">
             No verbs match your search filter criteria.
           </td>
         </tr>
@@ -297,6 +324,7 @@ window.APP_ROUTER = (function() {
         <td class="td-japanese">${v.hiragana}</td>
         <td>${v.romaji}</td>
         <td>${v.english}</td>
+        <td><span class="badge" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff;">${v.level}</span></td>
         <td class="td-group text-group-${v.group}">Group ${v.group}</td>
         <td class="td-japanese hl-te">${v.teForm}</td>
         <td class="td-japanese hl-ta">${v.taForm}</td>
