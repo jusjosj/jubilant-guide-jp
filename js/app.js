@@ -310,7 +310,7 @@ window.APP_ROUTER = (function() {
     if (filtered.length === 0) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="8" class="text-center" style="color: var(--color-text-muted); padding: 2rem;">
+          <td colspan="10" class="text-center" style="color: var(--color-text-muted); padding: 2rem;">
             No verbs match your search filter criteria.
           </td>
         </tr>
@@ -328,6 +328,8 @@ window.APP_ROUTER = (function() {
         <td class="td-group text-group-${v.group}">Group ${v.group}</td>
         <td class="td-japanese hl-te">${v.teForm}</td>
         <td class="td-japanese hl-ta">${v.taForm}</td>
+        <td class="td-japanese" style="color: var(--cyan-accent); font-weight: 500;">${v.politePastForm}</td>
+        <td class="td-japanese" style="color: var(--sakura-pink); font-weight: 500;">${v.plainPastNegForm}</td>
       </tr>
     `).join("");
   }

@@ -201,6 +201,8 @@
         group: 3, subtype: "irregular", isException: false,
         teForm: "して", teHiragana: "して", teRomaji: "shite",
         taForm: "した", taHiragana: "した", taRomaji: "shita",
+        politePastForm: "しました", politePastHiragana: "しました", politePastRomaji: "shimashita",
+        plainPastNegForm: "しなかった", plainPastNegHiragana: "しなかった", plainPastNegRomaji: "shinakatta",
         explanation: "Irregular verb 'suru' conjugates directly into 'shite' (-te form) and 'shita' (-ta form)."
       };
     }
@@ -209,7 +211,9 @@
         ...verb,
         group: 3, subtype: "irregular", isException: false,
         teForm: "来て", teHiragana: "きて", teRomaji: "kite",
-        taForm: "来た", taHiragana: "kita", taRomaji: "kita",
+        taForm: "来た", taHiragana: "きた", taRomaji: "kita",
+        politePastForm: "来ました", politePastHiragana: "きました", politePastRomaji: "kimashita",
+        plainPastNegForm: "来なかった", plainPastNegHiragana: "こなかった", plainPastNegRomaji: "konakatta",
         explanation: "Irregular verb 'kuru' (来る) changes its stem vowel, conjugating to 'kite' (来て) / 'kita' (来た)."
       };
     }
@@ -313,6 +317,59 @@
       }
     }
 
+    let politePastForm = "", politePastHiragana = "", politePastRomaji = "";
+    let plainPastNegForm = "", plainPastNegHiragana = "", plainPastNegRomaji = "";
+
+    if (group === 2) {
+      politePastForm = kanjiStem + "ました";
+      politePastHiragana = hiraStem + "ました";
+      politePastRomaji = romStem + "mashita";
+
+      plainPastNegForm = kanjiStem + "なかった";
+      plainPastNegHiragana = hiraStem + "なかった";
+      plainPastNegRomaji = romStem + "nakatta";
+    } else {
+      let iCol = "", aCol = "", iRom = "", aRom = "";
+      
+      switch (subtype) {
+        case "u":
+          iCol = "い"; aCol = "わ"; iRom = "i"; aRom = "wa";
+          break;
+        case "tsu":
+          iCol = "ち"; aCol = "た"; iRom = "chi"; aRom = "ta";
+          break;
+        case "ru":
+          iCol = "り"; aCol = "ら"; iRom = "ri"; aRom = "ra";
+          break;
+        case "bu":
+          iCol = "び"; aCol = "ば"; iRom = "bi"; aRom = "ba";
+          break;
+        case "mu":
+          iCol = "み"; aCol = "ま"; iRom = "mi"; aRom = "ma";
+          break;
+        case "nu":
+          iCol = "に"; aCol = "な"; iRom = "ni"; aRom = "na";
+          break;
+        case "ku":
+          iCol = "き"; aCol = "か"; iRom = "ki"; aRom = "ka";
+          break;
+        case "gu":
+          iCol = "ぎ"; aCol = "が"; iRom = "gi"; aRom = "ga";
+          break;
+        case "su":
+          iCol = "し"; aCol = "さ"; iRom = "shi"; aRom = "sa";
+          break;
+      }
+
+      politePastForm = kanjiStem + iCol + "ました";
+      politePastHiragana = hiraStem + iCol + "ました";
+      politePastRomaji = romStem + iRom + "mashita";
+
+      plainPastNegForm = kanjiStem + aCol + "なかった";
+      plainPastNegHiragana = hiraStem + aCol + "なかった";
+      plainPastNegRomaji = romStem + aRom + "nakatta";
+    }
+
     return {
       kanji: verb.kanji,
       hiragana: verb.hiragana,
@@ -328,6 +385,12 @@
       taForm: kanjiStem + taSfx,
       taHiragana: hiraStem + taSfx,
       taRomaji: romStem + taRomSfx,
+      politePastForm: politePastForm,
+      politePastHiragana: politePastHiragana,
+      politePastRomaji: politePastRomaji,
+      plainPastNegForm: plainPastNegForm,
+      plainPastNegHiragana: plainPastNegHiragana,
+      plainPastNegRomaji: plainPastNegRomaji,
       explanation: explanation
     };
   }

@@ -18,6 +18,9 @@ window.PRACTICE_MODULE = (function() {
     },
     // Flashcard variables
     isCardFlipped: false,
+    cardConfig: {
+      selectedForms: ["te", "ta"] // can contain "te", "ta", "politePast", "plainPastNeg"
+    },
     // Builder variables
     selectedSuffix: null
   };
@@ -54,7 +57,7 @@ window.PRACTICE_MODULE = (function() {
           <div class="mode-icon">🎴</div>
           <h3>Verb Flashcards</h3>
           <p>Study Japanese verbs at your own pace. Review dictionary forms, flip to see conjugations, and check grammar explanations.</p>
-          <button class="action-btn primary-btn mt-auto" onclick="window.PRACTICE_MODULE.startFlashcards()">Launch Flashcards</button>
+          <button class="action-btn primary-btn mt-auto" onclick="window.PRACTICE_MODULE.showFlashcardSettings()">Configure Flashcards</button>
         </div>
 
         <!-- Mode 2: The Conjugation Quiz -->
@@ -88,6 +91,71 @@ window.PRACTICE_MODULE = (function() {
   // FLASHCARDS MODE
   // ==========================================
 
+  function showFlashcardSettings() {
+    const container = document.getElementById("practice-container");
+    if (!container) return;
+
+    const forms = activeState.cardConfig.selectedForms;
+    const isTe = forms.includes("te");
+    const isTa = forms.includes("ta");
+    const isPolite = forms.includes("politePast");
+    const isNeg = forms.includes("plainPastNeg");
+
+    container.innerHTML = `
+      <div class="practice-header">
+        <button class="back-link" onclick="window.PRACTICE_MODULE.exitToPortal()">&larr; Exit to Practice Menu</button>
+      </div>
+
+      <div class="glass-card settings-card-form max-w-500 mx-auto">
+        <h3 class="text-center">Configure Flashcards</h3>
+        <p class="settings-intro text-center" style="margin-bottom: 1.5rem; color: var(--color-text-muted);">Select any combination of conjugation forms to display on the back of the cards.</p>
+        
+        <div class="settings-form">
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Conjugation Forms (Select Multiple):</label>
+            <div class="segmented-control" style="flex-wrap: wrap; gap: 8px;" id="flashcard-forms-select">
+              <button class="seg-btn ${isTe ? "active" : ""}" data-val="te" onclick="window.PRACTICE_MODULE.toggleFlashcardForm(this)">-te Form</button>
+              <button class="seg-btn ${isTa ? "active" : ""}" data-val="ta" onclick="window.PRACTICE_MODULE.toggleFlashcardForm(this)">-ta Form</button>
+              <button class="seg-btn ${isPolite ? "active" : ""}" data-val="politePast" onclick="window.PRACTICE_MODULE.toggleFlashcardForm(this)">-mashita</button>
+              <button class="seg-btn ${isNeg ? "active" : ""}" data-val="plainPastNeg" onclick="window.PRACTICE_MODULE.toggleFlashcardForm(this)">-nakatta</button>
+            </div>
+            <p id="flashcard-warn-text" class="text-center" style="font-size: 0.8rem; color: var(--color-danger); margin-top: 8px; visibility: hidden;">You must select at least one conjugation form!</p>
+          </div>
+
+          <button class="action-btn primary-btn w-full mt-4" onclick="window.PRACTICE_MODULE.startFlashcards()">Launch Flashcards! 🎴</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function toggleFlashcardForm(btnEl) {
+    const parent = btnEl.parentNode;
+    const activeBtns = parent.querySelectorAll(".seg-btn.active");
+    const warnText = document.getElementById("flashcard-warn-text");
+
+    if (btnEl.classList.contains("active")) {
+      // Trying to deactivate
+      if (activeBtns.length <= 1) {
+        if (warnText) {
+          warnText.style.visibility = "visible";
+          setTimeout(() => { if (warnText) warnText.style.visibility = "hidden"; }, 3000);
+        }
+        return;
+      }
+      btnEl.classList.remove("active");
+    } else {
+      btnEl.classList.add("active");
+      if (warnText) warnText.style.visibility = "hidden";
+    }
+
+    // Update activeState
+    const newSelection = [];
+    parent.querySelectorAll(".seg-btn.active").forEach(btn => {
+      newSelection.push(btn.dataset.val);
+    });
+    activeState.cardConfig.selectedForms = newSelection;
+  }
+
   function startFlashcards() {
     activeState.mode = "cards";
     // Filter verb database by level
@@ -114,6 +182,44 @@ window.PRACTICE_MODULE = (function() {
     }
 
     const verb = activeState.verbsList[activeState.currentIndex];
+
+    // Build dynamic answer display blocks
+    const selectedForms = activeState.cardConfig.selectedForms;
+    const numSelected = selectedForms.length;
+
+    const conjBlocks = {
+      te: `
+        <div class="conj-block">
+          <span class="conj-label">-te Form (て)</span>
+          <span class="conj-val-kanji"><span class="kanji-hover" data-read="${verb.teHiragana}">${verb.teForm}</span></span>
+          <span class="conj-val-kana">${verb.teHiragana}</span>
+        </div>
+      `,
+      ta: `
+        <div class="conj-block">
+          <span class="conj-label">-ta Form (た)</span>
+          <span class="conj-val-kanji"><span class="kanji-hover" data-read="${verb.taHiragana}">${verb.taForm}</span></span>
+          <span class="conj-val-kana">${verb.taHiragana}</span>
+        </div>
+      `,
+      politePast: `
+        <div class="conj-block">
+          <span class="conj-label">Polite Past (-mashita)</span>
+          <span class="conj-val-kanji"><span class="kanji-hover" data-read="${verb.politePastHiragana}">${verb.politePastForm}</span></span>
+          <span class="conj-val-kana">${verb.politePastHiragana}</span>
+        </div>
+      `,
+      plainPastNeg: `
+        <div class="conj-block">
+          <span class="conj-label">Plain Past Neg (-nakatta)</span>
+          <span class="conj-val-kanji"><span class="kanji-hover" data-read="${verb.plainPastNegHiragana}">${verb.plainPastNegForm}</span></span>
+          <span class="conj-val-kana">${verb.plainPastNegHiragana}</span>
+        </div>
+      `
+    };
+
+    const conjHtml = selectedForms.map(fKey => conjBlocks[fKey]).join("");
+    const gridStyle = numSelected === 1 ? "grid-template-columns: 1fr; gap: 0.5rem;" : "grid-template-columns: 1fr 1fr; gap: 1.5rem;";
     
     container.innerHTML = `
       <div class="practice-header">
@@ -128,26 +234,16 @@ window.PRACTICE_MODULE = (function() {
             <span class="badge badge-g${verb.group}">Group ${verb.group}</span>
             <div class="card-japanese-main">
               <span class="kanji-display"><span class="kanji-hover" data-read="${verb.hiragana}">${verb.kanji}</span></span>
-              <span class="kana-display">${verb.hiragana}</span>
             </div>
             <div class="card-english">${verb.english}</div>
             <div class="card-action-cue">Click Card to Flip</div>
           </div>
 
           <!-- BACK OF CARD -->
-          <div class="card-side card-back glass-card">
+          <div class="card-side card-back glass-card ${numSelected >= 3 ? "compact-layout" : ""}">
             <span class="badge badge-g${verb.group}">Conjugated Forms</span>
-            <div class="conjugations-display">
-              <div class="conj-block">
-                <span class="conj-label">-te Form</span>
-                <span class="conj-val-kanji"><span class="kanji-hover" data-read="${verb.teHiragana}">${verb.teForm}</span></span>
-                <span class="conj-val-kana">${verb.teHiragana}</span>
-              </div>
-              <div class="conj-block">
-                <span class="conj-label">-ta Form</span>
-                <span class="conj-val-kanji"><span class="kanji-hover" data-read="${verb.taHiragana}">${verb.taForm}</span></span>
-                <span class="conj-val-kana">${verb.taHiragana}</span>
-              </div>
+            <div class="conjugations-display" style="${gridStyle}">
+              ${conjHtml}
             </div>
             
             <div class="card-back-explanation">
@@ -208,10 +304,12 @@ window.PRACTICE_MODULE = (function() {
         <div class="settings-form">
           <div class="form-group">
             <label>Conjugation Form:</label>
-            <div class="segmented-control">
-              <button class="seg-btn active" data-val="both" onclick="window.PRACTICE_MODULE.setSeg(this, 'targetForm')">Both (-te / -ta)</button>
-              <button class="seg-btn" data-val="te" onclick="window.PRACTICE_MODULE.setSeg(this, 'targetForm')">-te Only</button>
-              <button class="seg-btn" data-val="ta" onclick="window.PRACTICE_MODULE.setSeg(this, 'targetForm')">-ta Only</button>
+            <div class="segmented-control" style="flex-wrap: wrap; gap: 8px;">
+              <button class="seg-btn active" data-val="both" onclick="window.PRACTICE_MODULE.setSeg(this, 'targetForm')">Mixed (All)</button>
+              <button class="seg-btn" data-val="te" onclick="window.PRACTICE_MODULE.setSeg(this, 'targetForm')">-te</button>
+              <button class="seg-btn" data-val="ta" onclick="window.PRACTICE_MODULE.setSeg(this, 'targetForm')">-ta</button>
+              <button class="seg-btn" data-val="politePast" onclick="window.PRACTICE_MODULE.setSeg(this, 'targetForm')">-mashita</button>
+              <button class="seg-btn" data-val="plainPastNeg" onclick="window.PRACTICE_MODULE.setSeg(this, 'targetForm')">-nakatta</button>
             </div>
           </div>
 
@@ -282,10 +380,11 @@ window.PRACTICE_MODULE = (function() {
 
     const verb = activeState.verbsList[activeState.currentIndex];
     
-    // Determine target form for this question (-te or -ta)
+    // Determine target form for this question (-te, -ta, politePast, plainPastNeg)
     let form = activeState.quizConfig.targetForm;
     if (form === "both") {
-      form = Math.random() > 0.5 ? "te" : "ta";
+      const forms = ["te", "ta", "politePast", "plainPastNeg"];
+      form = forms[Math.floor(Math.random() * forms.length)];
     }
 
     // Determine type (choice or input)
@@ -295,13 +394,24 @@ window.PRACTICE_MODULE = (function() {
     }
 
     // Prepare Question Model
+    let correctKanji = "", correctKana = "", correctRomaji = "";
+    if (form === "te") {
+      correctKanji = verb.teForm; correctKana = verb.teHiragana; correctRomaji = verb.teRomaji;
+    } else if (form === "ta") {
+      correctKanji = verb.taForm; correctKana = verb.taHiragana; correctRomaji = verb.taRomaji;
+    } else if (form === "politePast") {
+      correctKanji = verb.politePastForm; correctKana = verb.politePastHiragana; correctRomaji = verb.politePastRomaji;
+    } else if (form === "plainPastNeg") {
+      correctKanji = verb.plainPastNegForm; correctKana = verb.plainPastNegHiragana; correctRomaji = verb.plainPastNegRomaji;
+    }
+
     const qModel = {
       verb: verb,
-      form: form, // "te" or "ta"
-      type: qType, // "choice" or "input"
-      correctAnswerKanji: form === "te" ? verb.teForm : verb.taForm,
-      correctAnswerKana: form === "te" ? verb.teHiragana : verb.taHiragana,
-      correctAnswerRomaji: form === "te" ? verb.teRomaji : verb.taRomaji
+      form: form,
+      type: qType,
+      correctAnswerKanji: correctKanji,
+      correctAnswerKana: correctKana,
+      correctAnswerRomaji: correctRomaji
     };
 
     container.innerHTML = `
@@ -318,7 +428,7 @@ window.PRACTICE_MODULE = (function() {
         </div>
 
         <div class="quiz-target-banner target-${form}">
-          Form requested: <strong>-${form} Form (${form === "te" ? "て形" : "た形"})</strong>
+          Form requested: <strong>${form === "te" ? "-te Form (て形)" : form === "ta" ? "-ta Form (た形)" : form === "politePast" ? "Polite Past Form (-mashita / ました形)" : "Plain Past Negative Form (-nakatta / なかった形)"}</strong>
         </div>
 
         <div class="quiz-answer-area" id="quiz-interaction-container">
@@ -337,33 +447,44 @@ window.PRACTICE_MODULE = (function() {
   // Generate Distractor Conjugations for Multiple Choice
   function generateDistractors(qModel) {
     const verb = qModel.verb;
-    const isTe = qModel.form === "te";
+    const form = qModel.form;
     const correct = qModel.correctAnswerKanji;
 
     const distractors = new Set();
     
-    // Distractor 1: Standard Ichidan drop-ru rule on Godan (or vice versa)
-    if (verb.group === 1) {
-      // E.g., kau -> kaute / kauta (dropping u and adding te/ta)
-      distractors.add(verb.kanji.slice(0, -1) + (isTe ? "て" : "た"));
-      // E.g. kaurute / kauruta
-      distractors.add(verb.kanji + (isTe ? "て" : "た"));
-    } else {
-      // Ichidan verb distractors: e.g. tabete -> tabette / tabende
-      distractors.add(verb.kanji.slice(0, -1) + (isTe ? "って" : "った"));
-      distractors.add(verb.kanji.slice(0, -1) + (isTe ? "んで" : "んだ"));
+    if (form === "te" || form === "ta") {
+      const isTe = form === "te";
+      // Distractor 1: Standard Ichidan drop-ru rule on Godan (or vice versa)
+      if (verb.group === 1) {
+        // E.g., kau -> kaute / kauta (dropping u and adding te/ta)
+        distractors.add(verb.kanji.slice(0, -1) + (isTe ? "て" : "た"));
+      } else {
+        // Ichidan verb distractors: e.g. tabete -> tabette / tabende
+        distractors.add(verb.kanji.slice(0, -1) + (isTe ? "って" : "った"));
+        distractors.add(verb.kanji.slice(0, -1) + (isTe ? "んで" : "んだ"));
+      }
+
+      // Distractor 2: Swap te and ta endings (but on another rule)
+      // Distractor 3: Mix standard Godan suffixes
+      const suffixesTe = ["って", "んで", "いて", "いで", "して", "て"];
+      const suffixesTa = ["った", "んだ", "いた", "いだ", "した", "た"];
+      const stems = verb.kanji.slice(0, -1);
+
+      const targetSuffixes = isTe ? suffixesTe : suffixesTa;
+      targetSuffixes.forEach(sfx => {
+        distractors.add(stems + sfx);
+      });
+    } else if (form === "politePast") {
+      distractors.add(verb.kanji + "ました"); // e.g. 買うました
+      distractors.add(verb.teForm);          // e.g. 買って
+      distractors.add(verb.taForm);          // e.g. 買った
+      distractors.add(verb.plainPastNegForm); // e.g. 買わなかった
+    } else if (form === "plainPastNeg") {
+      distractors.add(verb.kanji + "なかった"); // e.g. 買うなかった
+      distractors.add(verb.taForm);            // e.g. 買った
+      distractors.add(verb.politePastForm);     // e.g. 買いました
+      distractors.add(verb.teForm);            // e.g. 買って
     }
-
-    // Distractor 2: Swap te and ta endings (but on another rule)
-    // Distractor 3: Mix standard Godan suffixes
-    const suffixesTe = ["って", "んで", "いて", "いで", "して", "て"];
-    const suffixesTa = ["った", "んだ", "いた", "いだ", "した", "た"];
-    const stems = verb.kanji.slice(0, -1);
-
-    const targetSuffixes = isTe ? suffixesTe : suffixesTa;
-    targetSuffixes.forEach(sfx => {
-      distractors.add(stems + sfx);
-    });
 
     // Remove correct answer
     distractors.delete(correct);
@@ -597,67 +718,81 @@ window.PRACTICE_MODULE = (function() {
 
     const verb = activeState.verbsList[activeState.currentIndex];
     
-    // Choose -te or -ta target form randomly
-    const isTe = Math.random() > 0.5;
-    const form = isTe ? "te" : "ta";
-    const correctAnswer = isTe ? verb.teForm : verb.taForm;
+    // Choose target form randomly from the 4 forms
+    const forms = ["te", "ta", "politePast", "plainPastNeg"];
+    const form = forms[Math.floor(Math.random() * forms.length)];
 
-    // Split Stem and target suffix
     let stem = "";
     let correctSuffix = "";
+    let correctAnswer = "";
 
     // Calculate split
-    if (verb.group === 2) {
-      // Ichidan
-      stem = verb.kanji.slice(0, -1);
-      correctSuffix = isTe ? "て" : "た";
-    } else if (verb.group === 3) {
-      // Irregular
-      if (verb.kanji === "する") {
-        stem = "し";
+    if (form === "te" || form === "ta") {
+      const isTe = form === "te";
+      correctAnswer = isTe ? verb.teForm : verb.taForm;
+
+      if (verb.group === 2) {
+        // Ichidan
+        stem = verb.kanji.slice(0, -1);
         correctSuffix = isTe ? "て" : "た";
-      } else { // くる
-        stem = "き";
-        correctSuffix = isTe ? "て" : "た";
-      }
-    } else {
-      // Godan
-      stem = verb.kanji.slice(0, -1);
-      if (verb.isException && verb.romaji === "iku") {
-        correctSuffix = isTe ? "って" : "った";
+      } else if (verb.group === 3) {
+        // Irregular
+        if (verb.kanji === "する") {
+          stem = "し";
+          correctSuffix = isTe ? "て" : "た";
+        } else { // くる
+          stem = "き";
+          correctSuffix = isTe ? "て" : "た";
+        }
       } else {
-        switch (verb.subtype) {
-          case "u":
-          case "tsu":
-          case "ru":
-            correctSuffix = isTe ? "って" : "った";
-            break;
-          case "bu":
-          case "mu":
-          case "nu":
-            correctSuffix = isTe ? "んで" : "んだ";
-            break;
-          case "ku":
-            correctSuffix = isTe ? "いて" : "いた";
-            break;
-          case "gu":
-            correctSuffix = isTe ? "いで" : "いだ";
-            break;
-          case "su":
-            correctSuffix = isTe ? "して" : "した";
-            break;
+        // Godan
+        stem = verb.kanji.slice(0, -1);
+        if (verb.isException && verb.romaji === "iku") {
+          correctSuffix = isTe ? "って" : "った";
+        } else {
+          switch (verb.subtype) {
+            case "u":
+            case "tsu":
+            case "ru":
+              correctSuffix = isTe ? "って" : "った";
+              break;
+            case "bu":
+            case "mu":
+            case "nu":
+              correctSuffix = isTe ? "んで" : "んだ";
+              break;
+            case "ku":
+              correctSuffix = isTe ? "いて" : "いた";
+              break;
+            case "gu":
+              correctSuffix = isTe ? "いで" : "いだ";
+              break;
+            case "su":
+              correctSuffix = isTe ? "して" : "した";
+              break;
+          }
         }
       }
+    } else if (form === "politePast") {
+      correctAnswer = verb.politePastForm;
+      correctSuffix = "ました";
+      stem = verb.politePastForm.slice(0, -3); // drop "ました"
+    } else if (form === "plainPastNeg") {
+      correctAnswer = verb.plainPastNegForm;
+      correctSuffix = "なかった";
+      stem = verb.plainPastNegForm.slice(0, -4); // drop "なかった"
     }
 
     // Generate option suffix blocks
-    // Pool of common suffixes
-    const allSuffixes = isTe ? 
-      ["て", "って", "んで", "いて", "いで", "して", "た"] : 
-      ["た", "った", "んだ", "いた", "いだ", "した", "て"];
+    const allSuffixes = ["て", "た", "ました", "なかった", "って", "んで", "いて", "いで", "して", "った", "んだ", "いた", "いだ", "した"];
     
-    // Ensure correct suffix is in array, take unique values
-    const sfxPool = Array.from(new Set([correctSuffix, ...allSuffixes])).sort(() => 0.5 - Math.random());
+    // Ensure correct suffix is in array, take unique values, slice 6, ensure correctSuffix is in it
+    const uniquePool = Array.from(new Set([correctSuffix, ...allSuffixes]));
+    const shuffledPool = uniquePool.sort(() => 0.5 - Math.random()).slice(0, 6);
+    if (!shuffledPool.includes(correctSuffix)) {
+      shuffledPool[0] = correctSuffix;
+    }
+    const sfxPool = shuffledPool.sort(() => 0.5 - Math.random());
 
     container.innerHTML = `
       <div class="practice-header">
@@ -669,7 +804,7 @@ window.PRACTICE_MODULE = (function() {
         <div class="builder-prompt">
           <span class="badge badge-g${verb.group}">Group ${verb.group}</span>
           <h2>Assemble Conjugation: <strong><span class="kanji-hover" data-read="${verb.hiragana}">${verb.kanji}</span></strong> (${verb.english})</h2>
-          <div class="builder-target-tag">Target Form: <strong>-${form} Form</strong></div>
+          <div class="builder-target-tag">Target Form: <strong>${form === "te" ? "-te Form" : form === "ta" ? "-ta Form" : form === "politePast" ? "Polite Past Form (-mashita)" : "Plain Past Negative (-nakatta)"}</strong></div>
         </div>
 
         <div class="assembly-area">
@@ -952,6 +1087,8 @@ window.PRACTICE_MODULE = (function() {
   return {
     init: initPracticePortal,
     setPracticeLevel,
+    showFlashcardSettings,
+    toggleFlashcardForm,
     startFlashcards,
     showQuizSettings,
     startQuiz,

@@ -2,7 +2,6 @@
 // Defines static lesson slides, the mnemonic conjugation song, and interactive sandbox visualizer.
 
 window.LESSONS_MODULE = (function() {
-  let currentSlideIndex = 0;
 
   const slides = [
     {
@@ -182,6 +181,53 @@ window.LESSONS_MODULE = (function() {
       `
     },
     {
+      title: "Polite Past (-mashita) & Plain Past Neg (-nakatta)",
+      type: "past-forms",
+      content: `
+        <p class="lead">Let's learn how to conjugate verbs into the <strong>Polite Past (-mashita)</strong> and <strong>Plain Past Negative (-nakatta)</strong> forms. These forms allow you to express completed past actions in both polite and casual styles.</p>
+        
+        <div class="rules-container">
+          <!-- Polite Past -->
+          <div class="glass-card rule-box">
+            <h3>Polite Past (-mashita / ました)</h3>
+            <p>Formed using the <strong>Masu-stem</strong> (dropping ~ru for Group 2, or shifting the last vowel to the "i" column for Group 1) + <strong>ました</strong>.</p>
+            
+            <table class="lesson-table" style="margin-top: 1rem;">
+              <thead>
+                <tr><th>Group</th><th>Verb</th><th>Masu-stem</th><th>Polite Past</th><th>Meaning</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Group 1</td><td><span class="kanji-hover" data-read="かう">買う</span></td><td>かい</td><td><span class="kanji-hover" data-read="かいました">買いました</span></td><td>bought</td></tr>
+                <tr><td>Group 1</td><td><span class="kanji-hover" data-read="まつ">待つ</span></td><td>まち</td><td><span class="kanji-hover" data-read="まちました">待ちました</span></td><td>waited</td></tr>
+                <tr><td>Group 2</td><td><span class="kanji-hover" data-read="たべる">食べる</span></td><td>たべ</td><td><span class="kanji-hover" data-read="たべました">食べました</span></td><td>ate</td></tr>
+                <tr><td>Group 3</td><td><span class="kanji-hover" data-read="する">する</span></td><td>し</td><td><span class="kanji-hover" data-read="しました">しました</span></td><td>did</td></tr>
+                <tr><td>Group 3</td><td><span class="kanji-hover" data-read="くる">来る</span></td><td>き</td><td><span class="kanji-hover" data-read="きました">来ました</span></td><td>came</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Plain Past Negative -->
+          <div class="glass-card rule-box">
+            <h3>Plain Past Negative (-nakatta / なかった)</h3>
+            <p>Formed using the <strong>Negative-stem</strong> (dropping ~ru for Group 2, or shifting the last vowel to the "a" column for Group 1) + <strong>なかった</strong>. <br><em>*Note: Godan verbs ending in <strong>う</strong> shift to <strong>わ</strong>.</em></p>
+            
+            <table class="lesson-table" style="margin-top: 1rem;">
+              <thead>
+                <tr><th>Group</th><th>Verb</th><th>Negative-stem</th><th>Plain Past Neg</th><th>Meaning</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Group 1</td><td><span class="kanji-hover" data-read="かう">買う</span></td><td>かわ</td><td><span class="kanji-hover" data-read="かわなかった">買わなかった</span></td><td>did not buy</td></tr>
+                <tr><td>Group 1</td><td><span class="kanji-hover" data-read="まつ">待つ</span></td><td>また</td><td><span class="kanji-hover" data-read="またなかった">待たなかった</span></td><td>did not wait</td></tr>
+                <tr><td>Group 2</td><td><span class="kanji-hover" data-read="たべる">食べる</span></td><td>たべ</td><td><span class="kanji-hover" data-read="たべなかった">食べなかった</span></td><td>did not eat</td></tr>
+                <tr><td>Group 3</td><td><span class="kanji-hover" data-read="する">する</span></td><td>し</td><td><span class="kanji-hover" data-read="しなかった">しなかった</span></td><td>did not do</td></tr>
+                <tr><td>Group 3</td><td><span class="kanji-hover" data-read="くる">来る</span></td><td>こ</td><td><span class="kanji-hover" data-read="こなかった">来なかった</span></td><td>did not come</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `
+    },
+    {
       title: "Interactive Conjugation Simulator",
       type: "simulator",
       content: `
@@ -196,9 +242,11 @@ window.LESSONS_MODULE = (function() {
             
             <div class="form-group">
               <label>Choose Target Form:</label>
-              <div class="toggle-buttons">
+              <div class="toggle-buttons" style="flex-wrap: wrap; gap: 8px;">
                 <button type="button" id="btn-toggle-te" class="toggle-btn active" data-form="te">-te Form (て)</button>
                 <button type="button" id="btn-toggle-ta" class="toggle-btn" data-form="ta">-ta Form (た)</button>
+                <button type="button" id="btn-toggle-politePast" class="toggle-btn" data-form="politePast">-mashita (ました)</button>
+                <button type="button" id="btn-toggle-plainPastNeg" class="toggle-btn" data-form="plainPastNeg">-nakatta (なかった)</button>
               </div>
             </div>
 
@@ -299,22 +347,115 @@ window.LESSONS_MODULE = (function() {
     }
   };
 
+  let activeLessonKey = null;
+  let activeLessonSlides = [];
+  let currentSlideIndex = 0;
+  let lessonContainerId = "";
+
+  const lessonsData = {
+    "teta-basics": {
+      title: "-te & -ta Conjugation Basics",
+      description: "Master verb groups, Ichidan vs. Godan stem rules, and sing the mnemonic song to memorize standard changes.",
+      slidesIndices: [0, 1, 2]
+    },
+    "past-tense": {
+      title: "Past Tense & Experiences",
+      description: "Express plain past experiences (〜たことがある), polite past (-mashita), and plain negative past (-nakatta) conjugations.",
+      slidesIndices: [3, 4]
+    },
+    "simulator": {
+      title: "Interactive Simulator",
+      description: "Select any verb from the database and visually inspect the stem split and replacement formulas step-by-step.",
+      slidesIndices: [5]
+    }
+  };
+
   function initLessonView(containerId) {
+    lessonContainerId = containerId;
+    activeLessonKey = null;
+    activeLessonSlides = [];
     currentSlideIndex = 0;
-    renderSlide(containerId);
+    renderPortal();
+  }
+
+  function renderPortal() {
+    const container = document.getElementById(lessonContainerId);
+    if (!container) return;
+
+    container.innerHTML = `
+      <div class="lessons-portal">
+        <div class="portal-header text-center">
+          <h2>Lessons Portal 📚</h2>
+          <p class="lead" style="color: var(--color-text-muted);">Select a lesson module below to begin learning conjugation rules step-by-step.</p>
+        </div>
+        
+        <div class="lessons-grid">
+          <div class="glass-card lesson-card clickable" onclick="window.LESSONS_MODULE.startLesson('teta-basics')">
+            <div class="lesson-card-header">
+              <span class="lesson-badge" style="background: rgba(108, 92, 231, 0.2); border: 1px solid rgba(108, 92, 231, 0.4); color: var(--sakura-pink);">Lesson 1</span>
+              <h3>-te & -ta Conjugation Basics</h3>
+            </div>
+            <p>${lessonsData["teta-basics"].description}</p>
+            <div class="lesson-meta-row">
+              <span>📋 3 Topics</span>
+              <span class="start-text">Start Lesson &rarr;</span>
+            </div>
+          </div>
+          
+          <div class="glass-card lesson-card clickable" onclick="window.LESSONS_MODULE.startLesson('past-tense')">
+            <div class="lesson-card-header">
+              <span class="lesson-badge" style="background: rgba(0, 206, 201, 0.2); border: 1px solid rgba(0, 206, 201, 0.4); color: var(--cyan-accent);">Lesson 2</span>
+              <h3>Past Tense & Experiences</h3>
+            </div>
+            <p>${lessonsData["past-tense"].description}</p>
+            <div class="lesson-meta-row">
+              <span>📋 2 Topics</span>
+              <span class="start-text">Start Lesson &rarr;</span>
+            </div>
+          </div>
+          
+          <div class="glass-card lesson-card clickable" onclick="window.LESSONS_MODULE.startLesson('simulator')">
+            <div class="lesson-card-header">
+              <span class="lesson-badge" style="background: rgba(255, 234, 167, 0.15); border: 1px solid rgba(255, 234, 167, 0.35); color: #ffeaa7;">Toolbox</span>
+              <h3>Interactive Simulator</h3>
+            </div>
+            <p>${lessonsData["simulator"].description}</p>
+            <div class="lesson-meta-row">
+              <span>🛠️ Sandbox Tool</span>
+              <span class="start-text">Open Sandbox &rarr;</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function startLesson(lessonKey) {
+    activeLessonKey = lessonKey;
+    activeLessonSlides = lessonsData[lessonKey].slidesIndices.map(idx => slides[idx]);
+    currentSlideIndex = 0;
+    renderSlide(lessonContainerId);
+  }
+
+  function exitToPortal() {
+    activeLessonKey = null;
+    activeLessonSlides = [];
+    currentSlideIndex = 0;
+    renderPortal();
   }
 
   function renderSlide(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    const slide = slides[currentSlideIndex];
-    const progressPercent = ((currentSlideIndex + 1) / slides.length) * 100;
+    const slide = activeLessonSlides[currentSlideIndex];
+    const progressPercent = ((currentSlideIndex + 1) / activeLessonSlides.length) * 100;
 
     container.innerHTML = `
       <div class="lesson-header">
         <div class="lesson-title-bar">
-          <span class="slide-indicator">Slide ${currentSlideIndex + 1} of ${slides.length}</span>
+          <button class="back-link" onclick="window.LESSONS_MODULE.exitToPortal()">&larr; Lessons List</button>
+          <span class="slide-indicator">Slide ${currentSlideIndex + 1} of ${activeLessonSlides.length}</span>
           <h2>${slide.title}</h2>
         </div>
         <div class="progress-bar-container">
@@ -331,7 +472,7 @@ window.LESSONS_MODULE = (function() {
           &larr; Back
         </button>
         <button id="btn-next-slide" class="action-btn primary-btn">
-          ${currentSlideIndex === slides.length - 1 ? "Finish Lesson &rarr;" : "Next &rarr;"}
+          ${currentSlideIndex === activeLessonSlides.length - 1 ? "Finish Lesson &rarr;" : "Next &rarr;"}
         </button>
       </div>
     `;
@@ -352,13 +493,11 @@ window.LESSONS_MODULE = (function() {
     });
 
     document.getElementById("btn-next-slide").addEventListener("click", () => {
-      if (currentSlideIndex < slides.length - 1) {
+      if (currentSlideIndex < activeLessonSlides.length - 1) {
         currentSlideIndex++;
         renderSlide(containerId);
       } else {
-        // Return to dashboard
-        window.APP_ROUTER.navigateTo("dashboard");
-        // Mark lesson completed in state
+        exitToPortal();
         window.APP_ROUTER.markLessonCompleted();
       }
     });
@@ -424,8 +563,7 @@ window.LESSONS_MODULE = (function() {
 
   function setupSimulatorEvents() {
     const select = document.getElementById("sim-verb-select");
-    const teBtn = document.getElementById("btn-toggle-te");
-    const taBtn = document.getElementById("btn-toggle-ta");
+    const toggleBtns = document.querySelectorAll(".toggle-buttons .toggle-btn");
 
     // Populate select
     select.innerHTML = window.VERB_DATABASE.map((v, idx) => `
@@ -438,18 +576,13 @@ window.LESSONS_MODULE = (function() {
       runSimulation();
     });
 
-    teBtn.addEventListener("click", () => {
-      teBtn.classList.add("active");
-      taBtn.classList.remove("active");
-      simulatorState.form = "te";
-      runSimulation();
-    });
-
-    taBtn.addEventListener("click", () => {
-      taBtn.classList.add("active");
-      teBtn.classList.remove("active");
-      simulatorState.form = "ta";
-      runSimulation();
+    toggleBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        toggleBtns.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        simulatorState.form = btn.dataset.form;
+        runSimulation();
+      });
     });
 
     // Initial run
@@ -463,8 +596,8 @@ window.LESSONS_MODULE = (function() {
     const v = simulatorState.verb;
     if (!v) return;
 
-    const isTe = simulatorState.form === "te";
-    
+    const form = simulatorState.form;
+
     // Update basic display info with Hiragana hover reading
     document.getElementById("sim-info-kanji").innerHTML = `<span class="kanji-hover" data-read="${v.hiragana}">${v.kanji}</span>`;
     document.getElementById("sim-info-romaji").innerText = `${v.hiragana} (${v.english})`;
@@ -511,22 +644,40 @@ window.LESSONS_MODULE = (function() {
     let ruleName = "";
 
     if (v.group === 2) {
-      replacement = isTe ? "て" : "た";
-      ruleName = "Drop る, add suffix";
+      if (form === "te") {
+        replacement = "て";
+        ruleName = "Drop る, add て";
+      } else if (form === "ta") {
+        replacement = "た";
+        ruleName = "Drop る, add た";
+      } else if (form === "politePast") {
+        replacement = "ました";
+        ruleName = "Drop る, add ました";
+      } else if (form === "plainPastNeg") {
+        replacement = "なかった";
+        ruleName = "Drop る, add なかった";
+      }
     } else if (v.group === 3) {
       if (v.hiragana === "する") {
-        replacement = isTe ? "して" : "した";
+        if (form === "te") replacement = "して";
+        else if (form === "ta") replacement = "した";
+        else if (form === "politePast") replacement = "しました";
+        else if (form === "plainPastNeg") replacement = "しなかった";
         ruleName = "Irregular conjugation";
       } else {
-        replacement = isTe ? "きて (来て)" : "きた (来た)";
+        if (form === "te") replacement = "きて (来て)";
+        else if (form === "ta") replacement = "きた (来た)";
+        else if (form === "politePast") replacement = "きました (来ました)";
+        else if (form === "plainPastNeg") replacement = "こなかった (来なかった)";
         ruleName = "Irregular conjugation";
       }
     } else {
       // Godan rules
-      if (v.isException && v.romaji === "iku") {
-        replacement = isTe ? "って" : "った";
+      if ((form === "te" || form === "ta") && v.isException && v.romaji === "iku") {
+        replacement = form === "te" ? "って" : "った";
         ruleName = "Special exception for 行く";
-      } else {
+      } else if (form === "te" || form === "ta") {
+        const isTe = form === "te";
         switch (v.subtype) {
           case "u":
           case "tsu":
@@ -553,6 +704,27 @@ window.LESSONS_MODULE = (function() {
             ruleName = "す &rarr; " + (isTe ? "して" : "した");
             break;
         }
+      } else {
+        // Godan politePast / plainPastNeg rules
+        let iCol = "", aCol = "";
+        switch (v.subtype) {
+          case "u": iCol = "い"; aCol = "わ"; break;
+          case "tsu": iCol = "ち"; aCol = "た"; break;
+          case "ru": iCol = "り"; aCol = "ら"; break;
+          case "bu": iCol = "び"; aCol = "ば"; break;
+          case "mu": iCol = "み"; aCol = "ま"; break;
+          case "nu": iCol = "に"; aCol = "な"; break;
+          case "ku": iCol = "き"; aCol = "か"; break;
+          case "gu": iCol = "ぎ"; aCol = "が"; break;
+          case "su": iCol = "し"; aCol = "さ"; break;
+        }
+        if (form === "politePast") {
+          replacement = iCol + "ました";
+          ruleName = `Shift ${ending} &rarr; ${iCol}ました`;
+        } else {
+          replacement = aCol + "なかった";
+          ruleName = `Shift ${ending} &rarr; ${aCol}なかった`;
+        }
       }
     }
 
@@ -567,8 +739,18 @@ window.LESSONS_MODULE = (function() {
 
     // Pipeline Step 3: Final Form Join
     const step3Div = document.getElementById("viz-step-3");
-    let finalFormKanji = isTe ? v.teForm : v.taForm;
-    let finalFormKana = isTe ? v.teHiragana : v.taHiragana;
+    let finalFormKanji = "";
+    let finalFormKana = "";
+
+    if (form === "te") {
+      finalFormKanji = v.teForm; finalFormKana = v.teHiragana;
+    } else if (form === "ta") {
+      finalFormKanji = v.taForm; finalFormKana = v.taHiragana;
+    } else if (form === "politePast") {
+      finalFormKanji = v.politePastForm; finalFormKana = v.politePastHiragana;
+    } else if (form === "plainPastNeg") {
+      finalFormKanji = v.plainPastNegForm; finalFormKana = v.plainPastNegHiragana;
+    }
 
     step3Div.innerHTML = `
       <div class="final-viz">
@@ -579,11 +761,17 @@ window.LESSONS_MODULE = (function() {
 
     // Step Explanation text
     const expDiv = document.getElementById("sim-explanation");
+    let formLabel = "";
+    if (form === "te") formLabel = "-te Form";
+    else if (form === "ta") formLabel = "-ta Form";
+    else if (form === "politePast") formLabel = "Polite Past Form (-mashita)";
+    else if (form === "plainPastNeg") formLabel = "Plain Past Negative Form (-nakatta)";
+
     let explText = `<strong>Explanation:</strong> ${v.explanation} `;
-    if (v.group === 1) {
+    if (v.group === 1 && (form === "te" || form === "ta")) {
       explText += `Since <strong>${v.kanji}</strong> ends in <strong>${ending}</strong>, it belongs to the <strong>${v.subtype}</strong> subcategory. `;
     }
-    explText += `The conjugation resulting in the <strong>-${simulatorState.form} Form</strong> is <strong>${finalFormKanji}</strong>.`;
+    explText += `The conjugation resulting in the <strong>${formLabel}</strong> is <strong>${finalFormKanji}</strong>.`;
 
     expDiv.innerHTML = explText;
     
@@ -594,6 +782,8 @@ window.LESSONS_MODULE = (function() {
   }
 
   return {
-    init: initLessonView
+    init: initLessonView,
+    startLesson: startLesson,
+    exitToPortal: exitToPortal
   };
 })();
