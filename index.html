@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Japanese -te & -ta Form Conjugation Trainer</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- MAIN NAVIGATION HEADER -->
+    <header class="main-header">
+      <div class="logo-section">
+        <h1>
+          て / た <span class="logo-ja">日本語</span> Conjugation
+        </h1>
+      </div>
+      <nav class="main-nav">
+        <ul>
+          <li><button class="nav-link active" data-target="dashboard">Dashboard</button></li>
+          <li><button class="nav-link" data-target="lessons">Lessons</button></li>
+          <li><button class="nav-link" data-target="practice">Practice Arena</button></li>
+          <li><button class="nav-link" data-target="sandbox">Sandbox</button></li>
+          <li><button class="nav-link" data-target="dictionary">Dictionary</button></li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- =======================================================================
+         VIEW 1: DASHBOARD
+         ======================================================================= -->
+    <main id="view-dashboard" class="app-view active">
+      <div class="dashboard-grid">
+        <!-- Left: Welcome & Quick Stats -->
+        <div class="glass-card welcome-card">
+          <h2>Welcome, Learner! 👋</h2>
+          <p class="lead">Ready to conquer Japanese verb conjugations? Practice the essential -te and -ta forms to unlock fluent conversation building blocks.</p>
+          
+          <div class="welcome-stats-row">
+            <div class="stat-item">
+              <span class="stat-val" id="stat-lessons-completed">0</span>
+              <span class="stat-lbl">Lessons Done</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-val" id="stat-quizzes-taken">0</span>
+              <span class="stat-lbl">Quizzes Taken</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-val" id="stat-practice-streak">0</span>
+              <span class="stat-lbl">Day Streak</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Progress Meter -->
+        <div class="glass-card stats-card">
+          <h3>Accuracy Score</h3>
+          <div class="stats-circle-container">
+            <svg class="stats-circle-svg">
+              <circle class="circle-bg" cx="65" cy="65" r="55"></circle>
+              <circle class="circle-fill" id="stat-accuracy-circle" cx="65" cy="65" r="55" stroke-dasharray="345.57" stroke-dashoffset="345.57"></circle>
+            </svg>
+            <div class="circle-percentage" id="stat-accuracy-text">0%</div>
+          </div>
+          <span class="stats-card-lbl">Overall Quiz Performance</span>
+        </div>
+
+        <!-- CTAs -->
+        <div class="cta-cards-row">
+          <div class="glass-card action-cta-card cta-lessons" onclick="window.APP_ROUTER.navigateTo('lessons')">
+            <div class="cta-icon">📖</div>
+            <div class="cta-info">
+              <h3>Start Interactive Lessons</h3>
+              <p>Learn verb classifications (Godan, Ichidan, Irregular) and study the conjugation mnemonic song step-by-step.</p>
+              <button class="action-btn primary-btn">Launch Lessons &rarr;</button>
+            </div>
+          </div>
+
+          <div class="glass-card action-cta-card cta-practice" onclick="window.APP_ROUTER.navigateTo('practice')">
+            <div class="cta-icon">🎯</div>
+            <div class="cta-info">
+              <h3>Practice Arena</h3>
+              <p>Reinforce your conjugation skills with interactive flashcards, drag-and-drop suffix builders, and conjugation quizzes.</p>
+              <button class="action-btn primary-btn" style="background: var(--sakura-pink); box-shadow: 0 4px 15px var(--sakura-pink-glow);">Practice Now &rarr;</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- =======================================================================
+         VIEW 2: LESSONS
+         ======================================================================= -->
+    <main id="view-lessons" class="app-view">
+      <div id="lesson-container">
+        <!-- Rendered dynamically by LESSONS_MODULE -->
+      </div>
+    </main>
+
+    <!-- =======================================================================
+         VIEW 3: PRACTICE
+         ======================================================================= -->
+    <main id="view-practice" class="app-view">
+      <div id="practice-container">
+        <!-- Rendered dynamically by PRACTICE_MODULE -->
+      </div>
+    </main>
+
+    <!-- =======================================================================
+         VIEW 4: VERB SANDBOX
+         ======================================================================= -->
+    <main id="view-sandbox" class="app-view">
+      <div class="glass-card sandbox-card">
+        <h2 class="text-center">Conjugation Sandbox 🧪</h2>
+        <p class="lead text-center">Deconstruct and analyze conjugation rules in real time. Choose a verb to see it break down.</p>
+        
+        <div class="form-group max-w-500 mx-auto">
+          <label for="sandbox-verb-select">Select a Verb:</label>
+          <select id="sandbox-verb-select" class="styled-select w-full"></select>
+        </div>
+
+        <div class="sandbox-split">
+          <!-- Left: Verb Information -->
+          <div class="glass-card group-card group-1" style="padding: 1.5rem;">
+            <div class="verb-main-display">
+              <h2 id="sand-display-kanji">食</h2>
+              <div id="sand-display-hiragana">たべる</div>
+              <div id="sand-display-romaji">taberu</div>
+              <div id="sand-display-meaning">to eat</div>
+            </div>
+            <div class="verb-meta-row">
+              <div><strong>Group:</strong> <span id="sand-display-group">2</span></div>
+              <div><strong>Subtype:</strong> <span id="sand-display-subtype">ichidan</span></div>
+            </div>
+          </div>
+
+          <!-- Right: Interactive Conjugations -->
+          <div class="glass-card sandbox-results-panel" style="padding: 1.5rem;">
+            <div class="sandbox-results-header">
+              <h3>Conjugations</h3>
+            </div>
+            <div class="sandbox-form-row">
+              <span>-te Form (て):</span>
+              <strong class="sandbox-form-val sand-te" id="sand-res-te">食べて</strong>
+            </div>
+            <div class="sandbox-form-row">
+              <span>-te (Kana/Romaji):</span>
+              <span id="sand-res-te-info">たべて / tabete</span>
+            </div>
+            <div class="sandbox-form-row">
+              <span>-ta Form (た):</span>
+              <strong class="sandbox-form-val sand-ta" id="sand-res-ta">食べた</strong>
+            </div>
+            <div class="sandbox-form-row">
+              <span>-ta (Kana/Romaji):</span>
+              <span id="sand-res-ta-info">たべた / tabeta</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="explanation-box mt-4" id="sandbox-explanation-text">
+          Select a verb above to view grammatical explanations.
+        </div>
+      </div>
+    </main>
+
+    <!-- =======================================================================
+         VIEW 5: DICTIONARY
+         ======================================================================= -->
+    <main id="view-dictionary" class="app-view">
+      <div class="dict-header">
+        <h2>Verb Index & Dictionary</h2>
+        <p class="lead">Search and filter all available verbs in our training database.</p>
+      </div>
+
+      <div class="dict-controls">
+        <div class="search-input-wrapper">
+          <input type="text" id="dict-search" placeholder="Search by Kanji, Hiragana, Romaji, or English meaning...">
+        </div>
+        <div class="segmented-control">
+          <button class="seg-btn active" data-filter="all" id="btn-filter-all">All Groups</button>
+          <button class="seg-btn" data-filter="1" id="btn-filter-g1">Godan (G1)</button>
+          <button class="seg-btn" data-filter="2" id="btn-filter-g2">Ichidan (G2)</button>
+          <button class="seg-btn" data-filter="3" id="btn-filter-g3">Irregular (G3)</button>
+        </div>
+      </div>
+
+      <div class="glass-card dict-table-card">
+        <table class="dict-table">
+          <thead>
+            <tr>
+              <th>Dictionary Kanji</th>
+              <th>Hiragana</th>
+              <th>Romaji</th>
+              <th>English Meaning</th>
+              <th>Group</th>
+              <th>-te Form</th>
+              <th>-ta Form</th>
+            </tr>
+          </thead>
+          <tbody id="dict-table-body">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="main-footer">
+      <p>&copy; 2026 Japanese Conjugation Trainer. Crafted for students & classrooms.</p>
+    </footer>
+
+  </div>
+
+  <!-- LOAD SCRIPTS IN ORDER -->
+  <script src="js/verbs.js"></script>
+  <script src="js/romajiToKana.js"></script>
+  <script src="js/lessons.js"></script>
+  <script src="js/practice.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
